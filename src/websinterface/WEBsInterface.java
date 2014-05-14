@@ -21,7 +21,7 @@ import javax.swing.border.Border;
  * This project contains the modules for the Java Version of the CAN-SWAT UI.
  * This class serves as the main/primary/core??? class for the entire project.
  * 
- * Version History
+ * Project Version History
  * 
  * v0.01: Basic Frame established. Icon image added. Frame startup settings
  *        initialized.
@@ -38,8 +38,9 @@ import javax.swing.border.Border;
  */
 public class WEBsInterface extends JFrame implements Runnable {
     
-// <editor-fold defaultstate="collapsed" desc="Button Look and Feel Declarations">
+// <editor-fold defaultstate="collapsed" desc="Dimension, Font, Border, and Image Declarations">
     private static final Dimension iconDim = new Dimension(32, 32);
+    private static final Dimension frameDim = new Dimension(1024, 768);
     private static final Font f = new Font("Sans_Serif", Font.PLAIN, 12);
     private static final Border b = BorderFactory.createEmptyBorder();
     
@@ -245,6 +246,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.setLayout(new GridBagLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(frame.getWidth(), frame.getHeight());
+        frame.setPreferredSize(frameDim);
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setIconImage(websIcon.getImage());
         frame.setTitle("WEBsInterface v0.06");
