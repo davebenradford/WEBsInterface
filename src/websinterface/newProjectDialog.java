@@ -4,6 +4,10 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.*;
 
 /**
@@ -41,9 +45,11 @@ public class newProjectDialog extends JFrame {
     private final JButton swatLocate;
 //</editor-fold>
     
-    private static final Font f = new Font("Sans_Serif", Font.BOLD, 12);
+    private final Font f = new Font("Sans_Serif", Font.BOLD, 12);
+    private final File dataFile;
+    private String source;
     
-    protected newProjectDialog() {
+    protected newProjectDialog() throws IOException {
         // Initialize the Dialog Box
         setLayout(new GridBagLayout());
         setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -52,80 +58,64 @@ public class newProjectDialog extends JFrame {
         setIconImage(WEBsInterface.websIcon.getImage());
         setTitle("Create a New STC Project");
         setLocation(this.getWidth() / 4, this.getHeight());
-        GridBagConstraints gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 0.3, 1.0);
-
-        // Component Initialization
+        
+        dataFile = new File(new File("").getAbsolutePath());
+        source = dataFile.toString();
         
         // Watershed Components
-        wsLbl = new JLabel("      Watershed:");
-        wsLbl.setHorizontalTextPosition(SwingConstants.RIGHT);
-        wsLbl.setFont(f);
+        wsLbl = createLabel(new JLabel("Watershed:", SwingConstants.RIGHT));
+        GridBagConstraints gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 0.3, 1.0);
         add(wsLbl, gbc);
         
-        wsFld = new JTextField("STC", 40);
-        wsFld.setFont(f);
+        wsFld = createField(new JTextField("STC", 40), "Watershed Project Name");
         gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 0, 2, 1, 0.7, 1.0);
         add(wsFld, gbc);
         
         // Project File Location Components
-        projLbl = new JLabel(" Project Folder:");
-        projLbl.setFont(f);
-        projLbl.setHorizontalTextPosition(SwingConstants.RIGHT);
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 1, 2, 1, 0.3, 1.0);
+        projLbl = createLabel(new JLabel("Project Folder:", SwingConstants.RIGHT));
+        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 0.3, 1.0);
         add(projLbl, gbc);
         
-        projFld = new JTextField("C:\\", 40);
-        projFld.setFont(f);
+        projFld = createField(new JTextField(source, 40), "Project File Location");
         gbc = setGBC(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1, 0.7, 1.0);
         add(projFld, gbc);
         
-        projLocate = new JButton("...");
-        projLocate.setFont(f);
+        projLocate = createButton(new JButton("..."), "Change Project Location", new directoryListener());
         gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 1, 1, 1, 0.05, 1.0);
         add(projLocate, gbc);
         
-        // Spatial Library Locaton Components
-        spatLbl = new JLabel("  Spatial Folder:");
-        spatLbl.setFont(f);
-        spatLbl.setHorizontalTextPosition(SwingConstants.RIGHT);
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 2, 1, 1, 0.3, 1.0);
+        // Spatial Data Locaton Components
+        spatLbl = createLabel(new JLabel("Spatial Folder:", SwingConstants.RIGHT));
+        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 2, 1, 1, 0.3, 1.0);
         add(spatLbl, gbc);
         
-        spatFld = new JTextField("C:\\", 40);
-        spatFld.setFont(f);
+        spatFld = createField(new JTextField(source, 40), "Spatial Data Location");
         gbc = setGBC(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 2, 1, 1, 0.7, 1.0);
         add(spatFld, gbc);
         
-        spatLocate = new JButton("...");
-        spatLocate.setFont(f);
+        spatLocate = createButton(new JButton("..."), "Change Spatial Data Location", new directoryListener());
         gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 2, 1, 1, 0.05, 1.0);
         add(spatLocate, gbc);
         
         // Swat Input File Location
-        swatLbl = new JLabel("      SWAT Input:");
-        swatLbl.setFont(f);
-        swatLbl.setHorizontalTextPosition(SwingConstants.RIGHT);
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 3, 1, 1, 0.3, 1.0);
+        swatLbl = createLabel(new JLabel("SWAT Input:", SwingConstants.RIGHT));
+        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 3, 1, 1, 0.3, 1.0);
         add(swatLbl, gbc);
         
-        swatFld = new JTextField("C:\\", 40);
-        swatFld.setFont(f);
+        swatFld = createField(new JTextField(source, 40), "SWAT Data Location");
         gbc = setGBC(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 3, 1, 1, 0.7, 1.0);
         add(swatFld, gbc);
         
-        swatLocate = new JButton("...");
-        swatLocate.setFont(f);
+        swatLocate = createButton(new JButton("..."), "Change SWAT Data Location", new directoryListener());
         gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 3, 1, 1, 0.05, 1.0);
         add(swatLocate, gbc);
         
         // Confirm and Cancel Buttons
-        confirm = new JButton("  OK  ");
-        confirm.setFont(f);
+        confirm = createButton(new JButton("OK"), "false", null);
         gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 1, 4, 1, 1, 0.85, 1.0);
         add(confirm, gbc);
         
-        cancel = new JButton("Cancel");
-        cancel.setFont(f);
+        cancel = createButton(new JButton("Cancel"), "false", null);
         gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 2, 4, 1, 1, 0.05, 1.0);
         add(cancel, gbc);
         
@@ -133,8 +123,49 @@ public class newProjectDialog extends JFrame {
         validate();
         setVisible(true);
     }
-  
+    
     /**
+     * 
+     * @param lbl: The JLabel component being constructed.
+     * @return: Returns the JLabel to be added to the Container for which it was created.
+     */
+    
+    private JLabel createLabel(JLabel lbl) {
+        lbl.setFont(f);
+        return lbl;
+    }
+    
+    /**
+     * 
+     * @param txt: The JTextField component being constructed.
+     * @param s: The String for the JTextField's ToolTip Text.
+     * @return: Returns the JTextField to be added to the Container for which it was created.
+     */
+    
+    private JTextField createField(JTextField txt, String s) {
+        txt.setFont(f);
+        txt.setToolTipText(s);
+        return txt;
+    }
+    
+    /**
+     * 
+     * @param btn: The JButton component being constructed.
+     * @param s: The String for the JButton's ToolTip Text.
+     * @param a: The ActionListener used by the JButton.
+     * @return: Returns the JButton to be added to the Container for which it was created.
+     */
+    
+    private JButton createButton(JButton btn, String s, ActionListener a) {
+        btn.setFont(f);
+        if(!(s.equals("false"))) {
+            btn.setToolTipText(s);
+        }
+        btn.addActionListener(a);
+        return btn;
+    }
+    
+        /**
      * 
      * @param i: Insets for the panel. Insets object.
      * @param fill: The fill property value for the component. Integer.
@@ -148,7 +179,7 @@ public class newProjectDialog extends JFrame {
      * @return 
      */
     
-    private static GridBagConstraints setGBC(Insets i, int fill, int a, int xCoord, int yCoord, int wide, int high, double weighX, double weighY) {
+    private GridBagConstraints setGBC(Insets i, int fill, int a, int xCoord, int yCoord, int wide, int high, double weighX, double weighY) {
         GridBagConstraints g = new GridBagConstraints();
         g.insets = i;
         g.fill = fill;
@@ -160,5 +191,26 @@ public class newProjectDialog extends JFrame {
         g.weightx = weighX;
         g.weighty = weighY;
         return g;
+    }
+    
+    private File getDirectory(){
+        JFileChooser selector = new JFileChooser();
+        selector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        selector.setSelectedFile(dataFile);
+        selector.showOpenDialog(null);
+        File openFile = selector.getSelectedFile();
+
+        source = openFile.toString();
+                
+        return openFile;
+    }
+    
+    // Listeners
+    
+    private class directoryListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae){
+            getDirectory();
+        }
     }
 }
