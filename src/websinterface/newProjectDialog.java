@@ -14,7 +14,7 @@ import javax.swing.*;
  *
  * @author Dave Radford
  * @since May 2014
- * @version 0.05
+ * @version 0.06
  * 
  * WEBs Interface (Java): New Project Creation Dialog Box
  * 
