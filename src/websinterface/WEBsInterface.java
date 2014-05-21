@@ -6,14 +6,12 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -22,7 +20,7 @@ import javax.swing.border.TitledBorder;
  *
  * @author Dave Radford
  * @since May 2014
- * @version 0.05
+ * @version 0.07
  * 
  * WEBs Interface (Java)
  * 
@@ -41,7 +39,8 @@ import javax.swing.border.TitledBorder;
  * v0.05: Built the New Project Dialog Box.
  * v0.06: Condensed component creation into two methods and the GridBagLayout
  *        weight setting values into one method, both for scalability.
- * 
+ * v0.07: Built the Main Panel Scenario Pane. Cleaned up code for scalability
+ *        and efficiency.
  * 
  */
 
@@ -51,7 +50,6 @@ public class WEBsInterface extends JFrame implements Runnable {
     private static final Dimension iconDim = new Dimension(32, 32);
     private static final Dimension frameDim = new Dimension(1024, 768);
     private static final Font f = new Font("Sans_Serif", Font.PLAIN, 12);
-    private static final Border b = BorderFactory.createEmptyBorder();
     
     public static final ImageIcon websIcon = new ImageIcon("src\\images\\icon_32x32.png");
     private static final ImageIcon newProjIcon = new ImageIcon("src\\images\\document_empty_32x32.png");
@@ -95,16 +93,22 @@ public class WEBsInterface extends JFrame implements Runnable {
     private static JButton runSwat;
     private static JButton scenButton;
     private static JButton spatLocBtn;
+    private static JButton swatLocBtn;
     private static JSeparator vSepProj;
     private static JSeparator vSepScen;
     private static JSeparator vSepRun;
+    
+    public static JLabel spatLocation;
+    public static JLabel projLocation;
+    public static JLabel swatLocation;
 //</editor-fold>
     
     private static void buildTopPanel() {
         // Initalize the Top Button Panel
         topPanel = new JPanel();
         topPanel.setLayout(new GridBagLayout());
-        newProj = createButton(new JButton("New Project", newProjIcon), "New Project", true, new newProjListener());
+        Border b = BorderFactory.createEmptyBorder();
+        newProj = createButton(new JButton("New Project", newProjIcon), "New Project", b, true, new newProjListener());
         
         // Resize Top Panel
         Dimension topDim = new Dimension(frame.getMaximumSize().width, newProj.getMaximumSize().height);
@@ -113,11 +117,11 @@ public class WEBsInterface extends JFrame implements Runnable {
         GridBagConstraints gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 0, 1, 1, 17, 0.028, 1.0);
         topPanel.add(newProj, gbc);
 
-        openProj = createButton(new JButton("Open Project", openProjIcon), "Open Project", true, null);
+        openProj = createButton(new JButton("Open Project", openProjIcon), "Open Project", b, true, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 1, 1, 1, 17, 0.028, 1.0);
         topPanel.add(openProj, gbc);
         
-        saveProj = createButton(new JButton("Save Project", saveProjIcon), "Save Project", false, null);
+        saveProj = createButton(new JButton("Save Project", saveProjIcon), "Save Project", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 2, 1, 1, 17, 0.028, 1.0);
         topPanel.add(saveProj, gbc);
         
@@ -125,19 +129,19 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 3, 1, 1, 17, 0.028, 1.0);
         topPanel.add(vSepProj, gbc);
         
-        newScen = createButton(new JButton("New Scenario", newScenIcon), "New Scenario", false, null);
+        newScen = createButton(new JButton("New Scenario", newScenIcon), "New Scenario", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 4, 1, 1, 17, 0.028, 1.0);
         topPanel.add(newScen, gbc);
         
-        editScen = createButton(new JButton("Edit Scenario", editScenIcon), "Edit Scenario", false, null);
+        editScen = createButton(new JButton("Edit Scenario", editScenIcon), "Edit Scenario", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 5, 1, 1, 17, 0.028, 1.0);
         topPanel.add(editScen, gbc);
         
-        saveScen = createButton(new JButton("Save Scenario", saveScenIcon), "Save Scenario", false, null);
+        saveScen = createButton(new JButton("Save Scenario", saveScenIcon), "Save Scenario", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 6, 1, 1, 17, 0.028, 1.0);
         topPanel.add(saveScen, gbc);
 
-        delScen = createButton(new JButton("Delete Scen.", delScenIcon), "Delete Scenario", false, null);
+        delScen = createButton(new JButton("Delete Scen.", delScenIcon), "Delete Scenario", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 7, 1, 1, 17, 0.028, 1.0);
         topPanel.add(delScen, gbc);
         
@@ -145,23 +149,23 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 8, 1, 1, 17, 0.028, 1.0);
         topPanel.add(vSepScen, gbc);
         
-        btnDam = createButton(new JButton("Small Dam", damIcon), "Small Dam BMP", false, null);
+        btnDam = createButton(new JButton("Small Dam", damIcon), "Small Dam BMP", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 9, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnDam, gbc);
         
-        btnPond = createButton(new JButton("Holding Pond", pondIcon), "Holding Pond BMP", false, null);
+        btnPond = createButton(new JButton("Holding Pond", pondIcon), "Holding Pond BMP", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 10, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnPond, gbc);
         
-        btnGraze = createButton(new JButton("Grazing", grazeIcon), "Grazing BMP", false, null);
+        btnGraze = createButton(new JButton("Grazing", grazeIcon), "Grazing BMP", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 11, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnGraze, gbc);
         
-        btnTill = createButton(new JButton("Tillage", tillIcon), "Tillage BMP", false, null);
+        btnTill = createButton(new JButton("Tillage", tillIcon), "Tillage BMP", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 12, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnTill, gbc);
         
-        btnForage = createButton(new JButton("Forage Cons.", forageIcon), "Forage Conservation BMP", false, null);
+        btnForage = createButton(new JButton("Forage Cons.", forageIcon), "Forage Conservation BMP", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 13, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnForage, gbc);
 
@@ -169,11 +173,11 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 14, 1, 1, 17, 0.028, 1.0);
         topPanel.add(vSepRun, gbc);
         
-        runEcon = createButton(new JButton("Run Economic", econIcon), "Run Economic Model", false, null);
+        runEcon = createButton(new JButton("Run Economic", econIcon), "Run Economic Model", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 15, 1, 1, 17, 0.028, 1.0);
         topPanel.add(runEcon, gbc);
         
-        runSwat = createButton(new JButton("Run SWAT", swatIcon),"Run Soil and Watershed Assessment Tool (SWAT) Model", false, null);
+        runSwat = createButton(new JButton("Run SWAT", swatIcon),"Run Soil and Watershed Assessment Tool (SWAT) Model", b, false, null);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 16, 1, 1, 17, 1.0, 1.0);
         topPanel.add(runSwat, gbc);
     }
@@ -187,15 +191,16 @@ public class WEBsInterface extends JFrame implements Runnable {
      * @return: Returns the JButton to be added to the Container for which it was created.
      */
     
-    private static JButton createButton(JButton btn, String s, Boolean en, ActionListener a) {
+    private static JButton createButton(JButton btn, String s, Border brd, Boolean en, ActionListener a) {
         btn.setFont(f);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setSize(iconDim);
-        btn.setBorder(b);
+        btn.setBorder(brd);
         btn.setContentAreaFilled(false);
         btn.setToolTipText(s);
         btn.setEnabled(en);
+        btn.setBounds(50, 50, 50, 50);
         btn.addActionListener(a);
         return btn;
     }
@@ -261,24 +266,6 @@ public class WEBsInterface extends JFrame implements Runnable {
         return g;
     }
     
-    // Listener Classes
-    
-    private static class newProjListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            try {
-                newProjectDialog npd = new newProjectDialog();
-                basic.setVisible(true);
-                spatial.setVisible(true);
-                swat.setVisible(true);
-                scenButton.setVisible(true);
-                spatLocBtn.setVisible(true);
-            } catch (IOException ex) {
-                Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-    
     private static void buildDBPanel() {
         dbPanel = new JPanel();
         dbPanel.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -291,58 +278,159 @@ public class WEBsInterface extends JFrame implements Runnable {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        mainPanel.setBackground(Color.WHITE);
         mainPanel.setToolTipText("This is the Main Program Panel.");
         
-        basic = createPanel(new JPanel(), "Basic Information", mainPanel.getWidth(), mainPanel.getWidth(), false);
+        Border b = BorderFactory.createRaisedBevelBorder();
+        basic = createPanel(new JPanel(), "Basic Information", mainPanel.getWidth(), mainPanel.getHeight(), false);
         
         JLabel wsNameLbl = new JLabel("Watershed Name", SwingConstants.RIGHT);
-        GridBagConstraints gbc = setGBC(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 0, 1, 1, 0.05, 0.2);
+        GridBagConstraints gbc = setGBC(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.0, 0.0);
         basic.add(wsNameLbl, gbc);
         
         JTextField wsNameFld = new JTextField("STC", 40);
-        gbc = setGBC(new Insets(0, -192, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 0, 2, 1, 0.95, 0.2);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 2.0, 0.0);
         basic.add(wsNameFld, gbc);
         
+        JLabel filler = new JLabel();
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 2, 1, 1.0, 0.0);
+        basic.add(filler, gbc);
+        
         JLabel projLocLbl = new JLabel("Project File", SwingConstants.RIGHT);
-        gbc = setGBC(new Insets(16, 48, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.2, 0.2);
+        gbc = setGBC(new Insets(16, 46, 16, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.2, 0.0);
         basic.add(projLocLbl, gbc);
         
-        JLabel projLocation = new JLabel("C:\\", SwingConstants.CENTER);
-        gbc = setGBC(new Insets(0, -192, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.8, 0.2);
+        projLocation = new JLabel("C:\\", SwingConstants.LEFT);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 1.0, 0.0);
         basic.add(projLocation, gbc);
         
-        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 1.0);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
         mainPanel.add(basic, gbc);
         
-        spatial = createPanel(new JPanel(), "Spatial Data", mainPanel.getWidth(), mainPanel.getWidth(), false);
+        spatial = createPanel(new JPanel(), "Spatial Data", mainPanel.getWidth(), mainPanel.getHeight(), false);
         
-        JLabel spatDatLbl = new JLabel("Spatial Data Folder", SwingConstants.RIGHT);
-        gbc = setGBC(new Insets(16, 8, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.2);
-        spatial.add(spatDatLbl, gbc);
-        
-        JLabel spatLocLbl = new JLabel("C:\\", SwingConstants.CENTER);
-        gbc = setGBC(new Insets(0, -64, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.95, 0.2);
+        JLabel spatLocLbl = new JLabel("Spatial Data Folder", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 6, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
         spatial.add(spatLocLbl, gbc);
         
-        spatLocBtn = createButton(new JButton(openProjIcon), "Show the Spatial Data Folder in Explorer.", true, null);
+        spatLocation = new JLabel("C:\\", SwingConstants.LEFT);
+        gbc = setGBC(new Insets(0, 8, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.9, 0.0);
+        spatial.add(spatLocation, gbc);
+        
+        spatLocBtn = createButton(new JButton(smOpenProjIcon), "Show the Spatial Data Folder in Explorer.", b, true, new openLocationListener());
         spatLocBtn.setVisible(false);
-        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.NORTHEAST, 2, 1, 1, 1, 0.0, 0.0);
+        gbc = setGBC(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 1, 3, 0.0, 0.0);
         spatial.add(spatLocBtn, gbc);
         
-        gbc = setGBC(new Insets(116, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 0, 0, 1, 2, 1.0, 1.0);
+        JLabel smDamLbl = new JLabel("Small Dam", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 48, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.05, 0.0);
+        spatial.add(smDamLbl, gbc);
+        
+        JTextField smDamFld = new JTextField("small_dam", 40);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 0.95, 0.0);
+        spatial.add(smDamFld, gbc);
+        
+        JLabel pondLbl = new JLabel("Holding Pond", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 34, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 3, 1, 1, 0.05, 0.0);
+        spatial.add(pondLbl, gbc);
+        
+        JTextField pondFld = new JTextField("holding_pond", 40);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 3, 1, 1, 0.95, 0.0);
+        spatial.add(pondFld, gbc);
+        
+        JLabel grazeLbl = new JLabel("Grazing", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 60, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 4, 1, 1, 0.05, 0.0);
+        spatial.add(grazeLbl, gbc);
+        
+        JTextField grazeFld = new JTextField("grazing", 40);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 4, 1, 1, 0.95, 0.0);
+        spatial.add(grazeFld, gbc);
+        
+        JLabel fieldLbl = new JLabel("Field", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 74, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 5, 1, 1, 0.05, 0.0);
+        spatial.add(fieldLbl, gbc);
+        
+        JTextField fieldFld = new JTextField("land2010_by_land_id", 40);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 5, 1, 1, 0.95, 0.0);
+        spatial.add(fieldFld, gbc);
+
+        JLabel farmLbl = new JLabel("Farm", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 74, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 6, 1, 1, 0.05, 0.0);
+        spatial.add(farmLbl, gbc);
+        
+        JTextField farmFld = new JTextField("farm2010", 40);
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 6, 1, 1, 0.95, 1.0);
+        spatial.add(farmFld, gbc);
+        
+        // 116
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 1.0, 0.0);
         mainPanel.add(spatial, gbc);
         
-        swat = createPanel(new JPanel(), "SWAT Data", mainPanel.getWidth(), mainPanel.getWidth(), false);
-        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 2, 1, 1, 1.0, 1.0);
+        swat = createPanel(new JPanel(), "SWAT Data", mainPanel.getWidth(), mainPanel.getHeight(), false);
+        
+        JLabel swatLocLbl = new JLabel("SWAT Data Folder", SwingConstants.RIGHT);
+        gbc = setGBC(new Insets(16, 10, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
+        swat.add(swatLocLbl, gbc);
+        
+        swatLocation = new JLabel("C:\\", SwingConstants.LEFT);
+        gbc = setGBC(new Insets(16, 0, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 1.0, 0.0);
+        swat.add(swatLocation, gbc);
+        
+        swatLocBtn = createButton(new JButton(smOpenProjIcon), "Show the SWAT Data Folder in Explorer.", b, true, new openLocationListener());
+        swatLocBtn.setVisible(false);
+        gbc = setGBC(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 1, 1, 0.0, 0.0);
+        swat.add(swatLocBtn, gbc);
+        
+        // -114
+        gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 0, 2, 1, 1, 1.0, 0.0);
         mainPanel.add(swat, gbc);
         
-        scenButton = createButton(new JButton("Create Base Scenarios"), "Builds the Base Historical and Conventional Scenarios.", true, null);
+        scenButton = createButton(new JButton("Create Base Scenarios"), "Builds the Base Historical and Conventional Scenarios.", b, true, null);
         gbc = setGBC(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 3, 0, 0, 0.25, 0.25);
         scenButton.setContentAreaFilled(true);
         scenButton.setVisible(false);
         mainPanel.add(scenButton, gbc);
         mainPanel.setVisible(true);
+    }
+    
+    // Listener Classes
+    
+    private static class newProjListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                newProjectDialog npd = new newProjectDialog();
+                basic.setVisible(true);
+                spatial.setVisible(true);
+                swat.setVisible(true);
+                scenButton.setVisible(true);
+                spatLocBtn.setVisible(true);
+                swatLocBtn.setVisible(true);
+            } catch (IOException ex) {
+                Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    private static class openLocationListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            if(ae.getSource().equals(spatLocBtn)) {
+                try {
+                    System.out.println(spatLocation.getText());
+                    Process pb = new ProcessBuilder("explorer.exe", "/select," + spatLocation.getText() + "\\spatial.db3").start();
+                } catch (IOException ex) {
+                    Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else if(ae.getSource().equals(swatLocBtn)) {
+                try {
+                    System.out.println(swatLocation.getText());
+                    Process pb = new ProcessBuilder("explorer.exe", "/select," + swatLocation.getText() + "\\conventional").start();
+                } catch (IOException ex) {
+                    Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
     
     public static void main(String[] args) {
@@ -360,7 +448,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.setPreferredSize(frameDim);
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setIconImage(websIcon.getImage());
-        frame.setTitle("WEBsInterface v0.06");
+        frame.setTitle("WEBsInterface v0.07");
         
         // Build the Top Toolbar
         buildTopPanel();
