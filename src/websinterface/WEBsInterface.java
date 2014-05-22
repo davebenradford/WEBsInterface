@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
  *
  * @author Dave Radford
  * @since May 2014
- * @version 0.07
+ * @version 0.09
  * 
  * WEBs Interface (Java)
  * 
@@ -41,6 +41,10 @@ import javax.swing.border.TitledBorder;
  *        weight setting values into one method, both for scalability.
  * v0.07: Built the Main Panel Scenario Pane. Cleaned up code for scalability
  *        and efficiency.
+ * v0.08: Cleaning code, altering Component declarations for inter-package
+ *        class calls. Completed listener functionality for main panel buttons.
+ * v0.09: Creation of the ScenarioBuilder class.
+ *        
  * 
  */
 

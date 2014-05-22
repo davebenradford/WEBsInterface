@@ -14,7 +14,7 @@ import javax.swing.*;
  *
  * @author Dave Radford
  * @since May 2014
- * @version 0.06
+ * @version 0.09
  * 
  * WEBs Interface (Java): New Project Creation Dialog Box
  * 
@@ -26,6 +26,12 @@ import javax.swing.*;
  * v0.05: Built the New Project Dialog Box.
  * v0.06: Condensed the GridBagLayout weight setting values
  *        into one method for scalability.
+ * v0.07: Cleaned up code for scalability and efficiency. Began implementing
+ *        listener classes for the dialog menu.
+ * v0.08: Dialog listeners mostly completed. Awaiting completion of Scenario
+ *        creation class before finalizing listeners. Cleaning code in terms of
+ *        function placement, component names, and overall comments.
+ * v0.09: Build Scenario creation class.
  */
 
 public class newProjectDialog {
@@ -236,6 +242,7 @@ public class newProjectDialog {
             frame.dispose();
         }
     }
+    
     private class cancelListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
