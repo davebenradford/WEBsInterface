@@ -337,7 +337,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGBC(new Insets(16, 34, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 3, 1, 1, 0.05, 0.0);
         spatial.add(pondLbl, gbc);
         
-        JTextField pondFld = new JTextField("holding_pond", 40);
+        JTextField pondFld = new JTextField("cattle_yard", 40);
         gbc = setGBC(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 3, 1, 1, 0.95, 0.0);
         spatial.add(pondFld, gbc);
         
