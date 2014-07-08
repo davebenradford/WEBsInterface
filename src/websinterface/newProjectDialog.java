@@ -34,7 +34,7 @@ import javax.swing.*;
  * v0.09: Build Scenario creation class.
  */
 
-public class newProjectDialog {
+public class NewProjectDialog {
     
 //<editor-fold defaultstate="collapsed" desc="Swing Component Declarations">
     private final JFrame frame;
@@ -57,7 +57,7 @@ public class newProjectDialog {
     private final File dataFile;
     private String source;
     
-    protected newProjectDialog() throws IOException {
+    protected NewProjectDialog() throws IOException {
         // Initialize the Dialog Box
         frame = new JFrame("Create a New STC Project");
         frame.setLayout(new GridBagLayout());

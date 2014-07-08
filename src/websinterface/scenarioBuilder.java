@@ -20,9 +20,9 @@ import java.sql.*;
  * 
  */
 
-public class scenarioBuilder {
+public class ScenarioBuilder {
     
-    public static void main( String args[] ) {
+    public static void main(String args[]) {
         Connection c = null;
         Statement stmt = null;
         try {
@@ -50,7 +50,7 @@ public class scenarioBuilder {
             rs.close();
             stmt.close();
             c.close();
-        } catch ( ClassNotFoundException | SQLException e ) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }

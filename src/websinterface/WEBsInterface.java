@@ -402,7 +402,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         @Override
         public void actionPerformed(ActionEvent ae) {
             try {
-                newProjectDialog npd = new newProjectDialog();
+                NewProjectDialog npd = new NewProjectDialog();
                 basic.setVisible(true);
                 spatial.setVisible(true);
                 swat.setVisible(true);
