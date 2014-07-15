@@ -215,7 +215,7 @@ pip-log.txt
 .mr.developer.cfg
 
 #STC Directories
-/Data/Spatial/*
-/Data/txtinout/*
-!/Data/Spatial/spatial.db3
-!/Data/Spatial/*.dbf
+/STC/Data/Spatial/*
+/STC/Data/txtinout/*
+!/STC/Data/Spatial/spatial.db3
+!/STC/Data/Spatial/*.dbf
