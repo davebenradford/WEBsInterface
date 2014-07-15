@@ -221,8 +221,8 @@ public class NewProjectDialog {
             getDirectory();
             if(ae.getSource().equals(projLocate)) {
                 projFld.setText(source);
-                spatFld.setText(source + "\\data\\Spatial");
-                swatFld.setText(source + "\\data\\txtinout");
+                spatFld.setText(source + "\\Data\\Spatial");
+                swatFld.setText(source + "\\Data\\txtinout");
             }
             else if(ae.getSource().equals(spatLocate)) {
                 spatFld.setText(source);
