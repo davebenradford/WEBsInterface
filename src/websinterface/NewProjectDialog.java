@@ -36,7 +36,8 @@ import javax.swing.*;
 
 public class NewProjectDialog {
     
-//<editor-fold defaultstate="collapsed" desc="Swing Component Declarations">
+    //Swing Component Declarations
+    
     private final JFrame frame;
     private final JTextField wsFld;
     private final JTextField projFld;
@@ -51,7 +52,6 @@ public class NewProjectDialog {
     private final JButton projLocate;
     private final JButton spatLocate;
     private final JButton swatLocate;
-//</editor-fold>
     
     private final Font f = new Font("Sans_Serif", Font.BOLD, 12);
     private final File dataFile;
@@ -200,6 +200,8 @@ public class NewProjectDialog {
         g.weighty = weighY;
         return g;
     }
+    
+    // File Chooser
     
     private File getDirectory(){
         JFileChooser selector = new JFileChooser();

@@ -1,6 +1,7 @@
 package websinterface;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -52,9 +53,11 @@ import javax.swing.border.TitledBorder;
 public class WEBsInterface extends JFrame implements Runnable {
     
     // Dimension, Font, Border, and Image Declarations
-    private static final Dimension iconDim = new Dimension(32, 32);
+    
+    private static final Dimension iconDim = new Dimension(40, 40);
     private static final Dimension frameDim = new Dimension(1024, 768);
     private static final Font f = new Font("Sans_Serif", Font.PLAIN, 12);
+    private static Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
     
     public static final ImageIcon websIcon = new ImageIcon("src\\images\\icon_32x32.png");
     private static final ImageIcon newProjIcon = new ImageIcon("src\\images\\document_empty_32x32.png");
@@ -74,6 +77,7 @@ public class WEBsInterface extends JFrame implements Runnable {
     private static final ImageIcon swatIcon = new ImageIcon("src\\images\\weather_snow.png");
     
     // Swing Component Declarations
+    
     private static JFrame frame;
     private static JPanel topPanel;
     private static JPanel dbPanel;
@@ -102,88 +106,13 @@ public class WEBsInterface extends JFrame implements Runnable {
     private static JSeparator vSepScen;
     private static JSeparator vSepRun;
     
+    // Public Swing Components
+    
     public static JLabel spatLocation;
     public static JLabel projLocation;
     public static JLabel swatLocation;
-    
-    private static void buildTopPanel() {
-        // Initalize the Top Button Panel
-        topPanel = new JPanel();
-        topPanel.setLayout(new GridBagLayout());
-        Border b = BorderFactory.createEmptyBorder();
-        newProj = createButton(new JButton("New Project", newProjIcon), "New Project", b, true, new newProjListener());
-        
-        // Resize Top Panel
-        Dimension topDim = new Dimension(frame.getMaximumSize().width, newProj.getMaximumSize().height);
-        Dimension sepDim = new Dimension(frame.getPreferredSize().width, newProj.getHeight());
-        topPanel.setSize(topDim);
-        GridBagConstraints gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 0, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(newProj, gbc);
-
-        openProj = createButton(new JButton("Open Project", openProjIcon), "Open Project", b, true, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 1, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(openProj, gbc);
-        
-        saveProj = createButton(new JButton("Save Project", saveProjIcon), "Save Project", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 2, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(saveProj, gbc);
-        
-        vSepProj = createSeparator(new JSeparator(SwingConstants.VERTICAL), sepDim, Color.GRAY);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 3, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(vSepProj, gbc);
-        
-        newScen = createButton(new JButton("New Scenario", newScenIcon), "New Scenario", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 4, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(newScen, gbc);
-        
-        editScen = createButton(new JButton("Edit Scenario", editScenIcon), "Edit Scenario", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 5, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(editScen, gbc);
-        
-        saveScen = createButton(new JButton("Save Scenario", saveScenIcon), "Save Scenario", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 6, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(saveScen, gbc);
-
-        delScen = createButton(new JButton("Delete Scen.", delScenIcon), "Delete Scenario", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 7, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(delScen, gbc);
-        
-        vSepScen = createSeparator(new JSeparator(JSeparator.VERTICAL), sepDim, Color.GRAY);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 8, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(vSepScen, gbc);
-        
-        btnDam = createButton(new JButton("Small Dam", damIcon), "Small Dam BMP", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 9, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(btnDam, gbc);
-        
-        btnPond = createButton(new JButton("Holding Pond", pondIcon), "Holding Pond BMP", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 10, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(btnPond, gbc);
-        
-        btnGraze = createButton(new JButton("Grazing", grazeIcon), "Grazing BMP", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 11, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(btnGraze, gbc);
-        
-        btnTill = createButton(new JButton("Tillage", tillIcon), "Tillage BMP", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 12, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(btnTill, gbc);
-        
-        btnForage = createButton(new JButton("Forage Cons.", forageIcon), "Forage Conservation BMP", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 13, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(btnForage, gbc);
-
-        vSepRun = createSeparator(new JSeparator(JSeparator.VERTICAL), sepDim, Color.GRAY);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 14, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(vSepRun, gbc);
-        
-        runEcon = createButton(new JButton("Run Economic", econIcon), "Run Economic Model", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 15, 1, 1, 17, 0.028, 1.0);
-        topPanel.add(runEcon, gbc);
-        
-        runSwat = createButton(new JButton("Run SWAT", swatIcon),"Run Soil and Watershed Assessment Tool (SWAT) Model", b, false, null);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 16, 1, 1, 17, 1.0, 1.0);
-        topPanel.add(runSwat, gbc);
-    }
+    public static JLabel progressLbl;
+    public static JProgressBar websProgressBar;
     
     /**
      * Create Button Method
@@ -256,10 +185,10 @@ public class WEBsInterface extends JFrame implements Runnable {
      * @param high: The height value for the component across the layout grid. Integer.
      * @param weighX: The weight value for the width of the component when placed in the container. Integer.
      * @param weighY: The weight value for the height of the component when placed in the container. Integer.
-     * @return: Returns the JSeparator to be added to the Container for which it was created.
+     * @return: Returns the GridBagConstraints for the component to be added.
      */
     
-    private static GridBagConstraints setGbc(Insets i, int fill, int a, int xCoord, int yCoord, int wide, int high, double weighX, double weighY) {
+    private static GridBagConstraints setGbc(Insets  i, int fill, int a, int xCoord, int yCoord, int wide, int high, double weighX, double weighY) {
         GridBagConstraints g = new GridBagConstraints();
         g.insets = i;
         g.fill = fill;
@@ -271,6 +200,87 @@ public class WEBsInterface extends JFrame implements Runnable {
         g.weightx = weighX;
         g.weighty = weighY;
         return g;
+    }
+    
+    // Build Classes
+    
+    private static void buildTopPanel() {
+        // Initalize the Top Button Panel
+        topPanel = new JPanel();
+        topPanel.setLayout(new GridBagLayout());
+        Border b = BorderFactory.createEmptyBorder();
+        newProj = createButton(new JButton("New Project", newProjIcon), "New Project", b, true, new newProjListener());
+        
+        // Resize Top Panel
+        Dimension topDim = new Dimension(frame.getMaximumSize().width, newProj.getMaximumSize().height);
+        Dimension sepDim = new Dimension(frame.getPreferredSize().width, newProj.getHeight());
+        topPanel.setSize(topDim);
+        GridBagConstraints gbc = setGbc(new Insets(2, 4, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 0, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(newProj, gbc);
+
+        openProj = createButton(new JButton("Open Project", openProjIcon), "Open Project", b, true, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 1, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(openProj, gbc);
+        
+        saveProj = createButton(new JButton("Save Project", saveProjIcon), "Save Project", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 2, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(saveProj, gbc);
+        
+        vSepProj = createSeparator(new JSeparator(SwingConstants.VERTICAL), sepDim, Color.GRAY);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 3, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(vSepProj, gbc);
+        
+        newScen = createButton(new JButton("New Scenario", newScenIcon), "New Scenario", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 4, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(newScen, gbc);
+        
+        editScen = createButton(new JButton("Edit Scenario", editScenIcon), "Edit Scenario", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 5, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(editScen, gbc);
+        
+        saveScen = createButton(new JButton("Save Scenario", saveScenIcon), "Save Scenario", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 6, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(saveScen, gbc);
+
+        delScen = createButton(new JButton("Delete Scen.", delScenIcon), "Delete Scenario", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 7, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(delScen, gbc);
+        
+        vSepScen = createSeparator(new JSeparator(JSeparator.VERTICAL), sepDim, Color.GRAY);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 8, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(vSepScen, gbc);
+        
+        btnDam = createButton(new JButton("Small Dam", damIcon), "Small Dam BMP", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 9, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(btnDam, gbc);
+        
+        btnPond = createButton(new JButton("Holding Pond", pondIcon), "Holding Pond BMP", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 10, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(btnPond, gbc);
+        
+        btnGraze = createButton(new JButton("Grazing", grazeIcon), "Grazing BMP", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 11, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(btnGraze, gbc);
+        
+        btnTill = createButton(new JButton("Tillage", tillIcon), "Tillage BMP", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 12, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(btnTill, gbc);
+        
+        btnForage = createButton(new JButton("Forage Cons.", forageIcon), "Forage Conservation BMP", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 13, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(btnForage, gbc);
+
+        vSepRun = createSeparator(new JSeparator(JSeparator.VERTICAL), sepDim, Color.GRAY);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 14, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(vSepRun, gbc);
+        
+        runEcon = createButton(new JButton("Run Economic", econIcon), "Run Economic Model", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 15, 1, 1, 17, 0.028, 1.0);
+        topPanel.add(runEcon, gbc);
+        
+        runSwat = createButton(new JButton("Run SWAT", swatIcon),"Run Soil and Watershed Assessment Tool (SWAT) Model", b, false, null);
+        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.WEST, 16, 1, 1, 17, 1.0, 1.0);
+        topPanel.add(runSwat, gbc);
     }
     
     private static void buildDbPanel() {
@@ -391,12 +401,19 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 0, 2, 1, 1, 1.0, 0.0);
         mainPanel.add(swat, gbc);
         
-        scenButton = createButton(new JButton("Create Base Scenarios"), "Builds the Base Historical and Conventional Scenarios.", b, true, new buildBaseScenarioListener());
+        scenButton = createButton(new JButton("Create Base Scenarios"), "Builds the Base Historical and Conventional Scenarios.", b, true, new baseScenarioListener());
         gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 3, 0, 0, 0.25, 0.25);
         scenButton.setContentAreaFilled(true);
         scenButton.setVisible(false);
         mainPanel.add(scenButton, gbc);
         mainPanel.setVisible(true);
+    }
+    
+    private static void buildProgressBar() {
+        websProgressBar = new JProgressBar(0, 100);
+        websProgressBar.setString(null);
+        websProgressBar.setStringPainted(false);
+        progressLbl = new JLabel("TESTING FOR LAYOUT", SwingConstants.RIGHT);
     }
     
     // Listener Classes
@@ -440,12 +457,16 @@ public class WEBsInterface extends JFrame implements Runnable {
         }
     }
     
-    private static class buildBaseScenarioListener implements ActionListener {
+    private static class baseScenarioListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
             try {
+                websProgressBar.setStringPainted(true);
+                cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
                 ScenarioBuilder sc = new ScenarioBuilder("historic", true, true);
                 sc = new ScenarioBuilder("conventional", true, false);
+                websProgressBar.setStringPainted(false);
+                cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
             } catch (ClassNotFoundException | SQLException | IOException e) {
                 Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
             }
@@ -456,8 +477,8 @@ public class WEBsInterface extends JFrame implements Runnable {
         // Set the Look and Feel of the Frame
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
         }
         // Initialize and Create the Main Frame (Container)
         frame = new JFrame();
@@ -467,23 +488,31 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.setPreferredSize(frameDim);
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setIconImage(websIcon.getImage());
-        frame.setTitle("WEBsInterface v0.07");
+        frame.setTitle("WEBsInterface v0.10");
+        frame.setCursor(cursor);
         
         // Build the Top Toolbar
         buildTopPanel();
-        GridBagConstraints gbc = setGbc(new Insets(4, 4, 4, 4), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 2, 1, 1, 0.3);
+        GridBagConstraints gbc = setGbc(new Insets(4, 4, 4, 4), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 0, 3, 1, 1, 0.3);
         frame.add(topPanel, gbc);
         
         // Build the Database/Project File Structure Panel
         buildDbPanel();
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 4, 8, 2), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 0, 1, 2, 0.15, 0.7);
+        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 4, 24, 2), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 0, 1, 2, 0.15, 1.0);
         frame.add(dbPanel, gbc);
         
         // Build the Main Panel
         buildMainPanel();
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 8, 4), GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 0, 1, 2, 0.85, 0.7);
+        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 2, 2, 0.85, 1.0);
         mainPanel.requestFocusInWindow();
         frame.add(mainPanel, gbc);
+        
+        // Build the Progress Bar & Label
+        buildProgressBar();
+        gbc = setGbc(new Insets(2, 2, 4, 154), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 2, 1, 1, 1, 0.15, 1.0);
+        frame.add(progressLbl, gbc);
+        gbc = setGbc(new Insets(2, 2, 4, 4), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 2, 1, 1, 1, 0.85, 1.0);
+        frame.add(websProgressBar, gbc);
         
         // Pack and Display the Frame
         frame.pack();
