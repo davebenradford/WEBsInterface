@@ -1,5 +1,6 @@
 package websinterface;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -9,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -54,16 +57,16 @@ public class WEBsInterface extends JFrame implements Runnable {
     
     // Dimension, Font, Border, and Image Declarations
     
-    private static final Dimension iconDim = new Dimension(40, 40);
-    private static final Dimension frameDim = new Dimension(1024, 768);
+    private static final Dimension topBtnDim = new Dimension(80, 64);
+    private static final Dimension pnlBtnDim = new Dimension(96, 64);
+    private static final Dimension frameDim = new Dimension(1300, 850);
     private static final Font f = new Font("Sans_Serif", Font.PLAIN, 12);
-    private static Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    
-    public static final ImageIcon websIcon = new ImageIcon("src\\images\\icon_32x32.png");
     private static final ImageIcon newProjIcon = new ImageIcon("src\\images\\document_empty_32x32.png");
     private static final ImageIcon openProjIcon = new ImageIcon("src\\images\\folder_32x32.png");
     private static final ImageIcon smOpenProjIcon = new ImageIcon("src\\images\\folder_16x16.png");
     private static final ImageIcon saveProjIcon = new ImageIcon("src\\images\\save_as_32x32.png");
+    private static final ImageIcon saveAsIcon = new ImageIcon("src\\images\\page_save.png");
+    private static final ImageIcon resIcon = new ImageIcon("src\\images\\3d_glasses.png");
     private static final ImageIcon newScenIcon = new ImageIcon("src\\images\\add.png");
     private static final ImageIcon editScenIcon = new ImageIcon("src\\images\\information.png");
     private static final ImageIcon saveScenIcon = new ImageIcon("src\\images\\picture_save.png");
@@ -75,16 +78,14 @@ public class WEBsInterface extends JFrame implements Runnable {
     private static final ImageIcon forageIcon = new ImageIcon("src\\images\\grass.png");
     private static final ImageIcon econIcon = new ImageIcon("src\\images\\cash_stack.png");
     private static final ImageIcon swatIcon = new ImageIcon("src\\images\\weather_snow.png");
+    public static final ImageIcon websIcon = new ImageIcon("src\\images\\icon_32x32.png");
     
     // Swing Component Declarations
     
-    private static JFrame frame;
     private static JPanel topPanel;
     private static JPanel dbPanel;
-    private static JPanel mainPanel;
-    private static JPanel basic;
-    private static JPanel spatial;
-    private static JPanel swat;
+    private static JPanel projPanel;
+    private static JPanel scenPanel;
     private static JButton newProj;
     private static JButton openProj;
     private static JButton saveProj;
@@ -99,41 +100,87 @@ public class WEBsInterface extends JFrame implements Runnable {
     private static JButton btnForage;
     private static JButton runEcon;
     private static JButton runSwat;
-    private static JButton scenButton;
-    private static JButton spatLocBtn;
-    private static JButton swatLocBtn;
     private static JSeparator vSepProj;
     private static JSeparator vSepScen;
     private static JSeparator vSepRun;
     
     // Public Swing Components
     
+    public static JFrame frame;
+    public static JPanel basicProj;
+    public static JPanel basicScen;
+    public static JPanel bmps;
+    public static JPanel control;
+    public static JPanel spatial;
+    public static JPanel swat;
     public static JLabel spatLocation;
     public static JLabel projLocation;
     public static JLabel swatLocation;
-    public static JLabel progressLbl;
-    public static JProgressBar websProgressBar;
+    private static JLabel progressLbl; // PRIVATE?
+    public static JButton scenButton;
+    public static JButton spatLocBtn;
+    public static JButton swatLocBtn;
+    public static JButton btnDamSc;
+    public static JButton btnPondSc;
+    public static JButton btnGrazeSc;
+    public static JButton btnTillSc;
+    public static JButton btnForageSc;
+    public static JButton btnSaveSc;
+    public static JButton btnSaveAsSc;
+    public static JButton btnEconSc;
+    public static JButton btnSwatSc;
+    public static JButton btnResultSc;
+    private static JProgressBar websProgressBar; //PRIVATE?
     
     /**
-     * Create Button Method
+     *
+     * Create Top Panel Button Method
      * 
      * @param btn: The JButton component being constructed.
      * @param s: The String for the JButton's ToolTip Text.
+     * @param brd: The Border for the JButton.
      * @param en: The Boolean value for buttons that are enabled at startup.
+     * @param a: ActionListener associated with the JButton.
+     * @param m: MouseListener associated with the JButton.
      * @return: Returns the JButton to be added to the Container for which it was created.
      */
     
-    private static JButton createButton(JButton btn, String s, Border brd, Boolean en, ActionListener a) {
+    private static JButton createTopPanelButton(JButton btn, String s, Border brd, Boolean en, ActionListener a, MouseListener m) {
         btn.setFont(f);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
-        btn.setSize(iconDim);
+        btn.setPreferredSize(topBtnDim);
         btn.setBorder(brd);
         btn.setContentAreaFilled(false);
         btn.setToolTipText(s);
         btn.setEnabled(en);
-        btn.setBounds(50, 50, 50, 50);
+        btn.setFocusable(false);
         btn.addActionListener(a);
+        btn.addMouseListener(m);
+        return btn;
+    }
+    
+    /**
+     * 
+     * Create Scenario Panel Button Method
+     * 
+     * @param btn: The JButton component being constructed. 
+     * @param s: The String for the JButton's ToolTip Text.
+     * @param a: ActionListener associated with the JButton.
+     * @param m: MouseListener associated with the JButton.
+     * @return: Returns the JButton to be added to the Container for which it was created. 
+     */
+    
+    private static JButton createScenarioPanelButton(JButton btn, String s, ActionListener a, MouseListener m) {
+        btn.setFont(f);
+        btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btn.setHorizontalTextPosition(SwingConstants.CENTER);
+        btn.setPreferredSize(pnlBtnDim);
+        btn.setToolTipText(s);
+        btn.setEnabled(true);
+        btn.setFocusable(false);
+        btn.addActionListener(a);
+        btn.addMouseListener(m);
         return btn;
     }
     
@@ -202,6 +249,34 @@ public class WEBsInterface extends JFrame implements Runnable {
         return g;
     }
     
+    // Progress Bar Class
+    
+    /**
+     * 
+     * Calculating Progress Bar Value Method
+     * 
+     * @param t: The boolean value used to determine the progress for historic
+     *           or conventional progress counter.
+     * @param p: The current value of the progress bar.
+     * @return The value to be added to the progress bar total.
+     */        
+    
+    public static double calculateProgressBaseScenario(String txt, boolean type, double progress) {
+        progressLbl.setText(txt);
+        progressLbl.revalidate();
+        progressLbl.repaint();
+        if(type) {
+            progress += 5.8823529411;
+        }
+        else {
+            progress += 16.666666667;
+        }
+        websProgressBar.setValue((int) Math.round(progress));
+        websProgressBar.revalidate();
+        websProgressBar.repaint();
+        return progress;
+    }
+    
     // Build Classes
     
     private static void buildTopPanel() {
@@ -209,7 +284,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         topPanel = new JPanel();
         topPanel.setLayout(new GridBagLayout());
         Border b = BorderFactory.createEmptyBorder();
-        newProj = createButton(new JButton("New Project", newProjIcon), "New Project", b, true, new newProjListener());
+        newProj = createTopPanelButton(new JButton("New Project", newProjIcon), "New Project", b, true, new newProjListener(), new buttonMouseListener());
         
         // Resize Top Panel
         Dimension topDim = new Dimension(frame.getMaximumSize().width, newProj.getMaximumSize().height);
@@ -218,72 +293,72 @@ public class WEBsInterface extends JFrame implements Runnable {
         GridBagConstraints gbc = setGbc(new Insets(2, 4, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 0, 1, 1, 17, 0.028, 1.0);
         topPanel.add(newProj, gbc);
 
-        openProj = createButton(new JButton("Open Project", openProjIcon), "Open Project", b, true, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 1, 1, 1, 17, 0.028, 1.0);
+        openProj = createTopPanelButton(new JButton("Open Project", openProjIcon), "Open Project", b, true, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 2, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 1, 1, 1, 17, 0.028, 1.0);
         topPanel.add(openProj, gbc);
         
-        saveProj = createButton(new JButton("Save Project", saveProjIcon), "Save Project", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 2, 1, 1, 17, 0.028, 1.0);
+        saveProj = createTopPanelButton(new JButton("Save Project", saveProjIcon), "Save Project", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 2, 1, 1, 17, 0.028, 1.0);
         topPanel.add(saveProj, gbc);
         
         vSepProj = createSeparator(new JSeparator(SwingConstants.VERTICAL), sepDim, Color.GRAY);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 3, 1, 1, 17, 0.028, 1.0);
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 3, 1, 1, 17, 0.028, 1.0);
         topPanel.add(vSepProj, gbc);
         
-        newScen = createButton(new JButton("New Scenario", newScenIcon), "New Scenario", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 4, 1, 1, 17, 0.028, 1.0);
+        newScen = createTopPanelButton(new JButton("New Scenario", newScenIcon), "New Scenario", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 4, 1, 1, 17, 0.028, 1.0);
         topPanel.add(newScen, gbc);
         
-        editScen = createButton(new JButton("Edit Scenario", editScenIcon), "Edit Scenario", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 5, 1, 1, 17, 0.028, 1.0);
+        editScen = createTopPanelButton(new JButton("Edit Scenario", editScenIcon), "Edit Scenario", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 5, 1, 1, 17, 0.028, 1.0);
         topPanel.add(editScen, gbc);
         
-        saveScen = createButton(new JButton("Save Scenario", saveScenIcon), "Save Scenario", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 6, 1, 1, 17, 0.028, 1.0);
+        saveScen = createTopPanelButton(new JButton("Save Scenario", saveScenIcon), "Save Scenario", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 6, 1, 1, 17, 0.028, 1.0);
         topPanel.add(saveScen, gbc);
 
-        delScen = createButton(new JButton("Delete Scen.", delScenIcon), "Delete Scenario", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 7, 1, 1, 17, 0.028, 1.0);
+        delScen = createTopPanelButton(new JButton("Delete Scen.", delScenIcon), "Delete Scenario", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 7, 1, 1, 17, 0.028, 1.0);
         topPanel.add(delScen, gbc);
         
         vSepScen = createSeparator(new JSeparator(JSeparator.VERTICAL), sepDim, Color.GRAY);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 8, 1, 1, 17, 0.028, 1.0);
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 8, 1, 1, 17, 0.028, 1.0);
         topPanel.add(vSepScen, gbc);
         
-        btnDam = createButton(new JButton("Small Dam", damIcon), "Small Dam BMP", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 9, 1, 1, 17, 0.028, 1.0);
+        btnDam = createTopPanelButton(new JButton("Small Dam", damIcon), "Small Dam BMP", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 9, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnDam, gbc);
         
-        btnPond = createButton(new JButton("Holding Pond", pondIcon), "Holding Pond BMP", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 10, 1, 1, 17, 0.028, 1.0);
+        btnPond = createTopPanelButton(new JButton("Holding Pond", pondIcon), "Holding Pond BMP", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 10, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnPond, gbc);
         
-        btnGraze = createButton(new JButton("Grazing", grazeIcon), "Grazing BMP", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 11, 1, 1, 17, 0.028, 1.0);
+        btnGraze = createTopPanelButton(new JButton("Grazing", grazeIcon), "Grazing BMP", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 11, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnGraze, gbc);
         
-        btnTill = createButton(new JButton("Tillage", tillIcon), "Tillage BMP", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 12, 1, 1, 17, 0.028, 1.0);
+        btnTill = createTopPanelButton(new JButton("Tillage", tillIcon), "Tillage BMP", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 12, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnTill, gbc);
         
-        btnForage = createButton(new JButton("Forage Cons.", forageIcon), "Forage Conservation BMP", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 13, 1, 1, 17, 0.028, 1.0);
+        btnForage = createTopPanelButton(new JButton("Forage", forageIcon), "Foraging BMP", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_START, 13, 1, 1, 17, 0.028, 1.0);
         topPanel.add(btnForage, gbc);
 
         vSepRun = createSeparator(new JSeparator(JSeparator.VERTICAL), sepDim, Color.GRAY);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 14, 1, 1, 17, 0.028, 1.0);
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.VERTICAL, GridBagConstraints.FIRST_LINE_START, 14, 1, 1, 17, 0.028, 1.0);
         topPanel.add(vSepRun, gbc);
         
-        runEcon = createButton(new JButton("Run Economic", econIcon), "Run Economic Model", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 15, 1, 1, 17, 0.028, 1.0);
+        runEcon = createTopPanelButton(new JButton("Run Economic", econIcon), "Run Economic Model", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.HORIZONTAL, GridBagConstraints.FIRST_LINE_START, 15, 1, 1, 17, 0.028, 1.0);
         topPanel.add(runEcon, gbc);
         
-        runSwat = createButton(new JButton("Run SWAT", swatIcon),"Run Soil and Watershed Assessment Tool (SWAT) Model", b, false, null);
-        gbc = setGbc(new Insets(2, 8, 2, 8), GridBagConstraints.NONE, GridBagConstraints.WEST, 16, 1, 1, 17, 1.0, 1.0);
+        runSwat = createTopPanelButton(new JButton("Run SWAT", swatIcon),"Run Soil and Watershed Assessment Tool (SWAT) Model", b, false, null, new buttonMouseListener());
+        gbc = setGbc(new Insets(2, 4, 2, 4), GridBagConstraints.NONE, GridBagConstraints.WEST, 16, 1, 1, 17, 1.0, 1.0);
         topPanel.add(runSwat, gbc);
     }
     
-    private static void buildDbPanel() {
+    private static void buildProjectTreePanel() {
         dbPanel = new JPanel();
         dbPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         dbPanel.setBackground(Color.WHITE);
@@ -291,39 +366,38 @@ public class WEBsInterface extends JFrame implements Runnable {
         dbPanel.setVisible(true);
     }
     
-    private static void buildMainPanel() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-        mainPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        mainPanel.setToolTipText("This is the Main Program Panel.");
+    private static void buildNewProjectPanel() {
+        projPanel = new JPanel();
+        projPanel.setLayout(new GridBagLayout());
+        projPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         
         Border b = BorderFactory.createRaisedBevelBorder();
-        basic = createPanel(new JPanel(), "Basic Information", mainPanel.getWidth(), mainPanel.getHeight(), false);
+        basicProj = createPanel(new JPanel(), "Basic Information", projPanel.getWidth(), projPanel.getHeight(), false);
         
         JLabel wsNameLbl = new JLabel("Watershed Name", SwingConstants.RIGHT);
         GridBagConstraints gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.0, 0.0);
-        basic.add(wsNameLbl, gbc);
+        basicProj.add(wsNameLbl, gbc);
         
         JTextField wsNameFld = new JTextField("STC", 40);
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 2.0, 0.0);
-        basic.add(wsNameFld, gbc);
+        basicProj.add(wsNameFld, gbc);
         
         JLabel filler = new JLabel();
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 2, 1, 1.0, 0.0);
-        basic.add(filler, gbc);
+        basicProj.add(filler, gbc);
         
         JLabel projLocLbl = new JLabel("Project File", SwingConstants.RIGHT);
         gbc = setGbc(new Insets(16, 46, 16, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.2, 0.0);
-        basic.add(projLocLbl, gbc);
+        basicProj.add(projLocLbl, gbc);
         
         projLocation = new JLabel("C:\\", SwingConstants.LEFT);
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 1.0, 0.0);
-        basic.add(projLocation, gbc);
+        basicProj.add(projLocation, gbc);
         
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
-        mainPanel.add(basic, gbc);
+        projPanel.add(basicProj, gbc);
         
-        spatial = createPanel(new JPanel(), "Spatial Data", mainPanel.getWidth(), mainPanel.getHeight(), false);
+        spatial = createPanel(new JPanel(), "Spatial Data", projPanel.getWidth(), projPanel.getHeight(), false);
         
         JLabel spatLocLbl = new JLabel("Spatial Data Folder", SwingConstants.RIGHT);
         gbc = setGbc(new Insets(16, 6, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
@@ -333,8 +407,9 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGbc(new Insets(0, 8, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.9, 0.0);
         spatial.add(spatLocation, gbc);
         
-        spatLocBtn = createButton(new JButton(smOpenProjIcon), "Show the Spatial Data Folder in Explorer.", b, true, new openLocationListener());
+        spatLocBtn = createTopPanelButton(new JButton(smOpenProjIcon), "Show the Spatial Data Folder in Explorer.", b, true, new openLocationListener(), null);
         spatLocBtn.setVisible(false);
+        spatLocBtn.setPreferredSize(new Dimension(32, 32));
         gbc = setGbc(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 1, 3, 0.0, 0.0);
         spatial.add(spatLocBtn, gbc);
         
@@ -378,11 +453,10 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 6, 1, 1, 0.95, 1.0);
         spatial.add(farmFld, gbc);
         
-        // 116
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 1.0, 0.0);
-        mainPanel.add(spatial, gbc);
+        projPanel.add(spatial, gbc);
         
-        swat = createPanel(new JPanel(), "SWAT Data", mainPanel.getWidth(), mainPanel.getHeight(), false);
+        swat = createPanel(new JPanel(), "SWAT Data", projPanel.getWidth(), projPanel.getHeight(), false);
         
         JLabel swatLocLbl = new JLabel("SWAT Data Folder", SwingConstants.RIGHT);
         gbc = setGbc(new Insets(16, 10, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
@@ -392,28 +466,115 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGbc(new Insets(16, 0, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 1.0, 0.0);
         swat.add(swatLocation, gbc);
         
-        swatLocBtn = createButton(new JButton(smOpenProjIcon), "Show the SWAT Data Folder in Explorer.", b, true, new openLocationListener());
+        swatLocBtn = createTopPanelButton(new JButton(smOpenProjIcon), "Show the SWAT Data Folder in Explorer.", b, true, new openLocationListener(), null);
         swatLocBtn.setVisible(false);
+        swatLocBtn.setPreferredSize(new Dimension(32, 32));
         gbc = setGbc(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 1, 1, 0.0, 0.0);
         swat.add(swatLocBtn, gbc);
         
-        // -114
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 0, 2, 1, 1, 1.0, 0.0);
-        mainPanel.add(swat, gbc);
+        projPanel.add(swat, gbc);
         
-        scenButton = createButton(new JButton("Create Base Scenarios"), "Builds the Base Historical and Conventional Scenarios.", b, true, new baseScenarioListener());
+        scenButton = createScenarioPanelButton(new JButton(), "Builds the Base Historical and Conventional Scenarios.", new baseScenarioListener(), null);
+        scenButton.setLayout(new BorderLayout());
+        scenButton.add(BorderLayout.CENTER, new JLabel("Create Base", SwingConstants.CENTER));
+        scenButton.add(BorderLayout.SOUTH, new JLabel(" Scenarios ", SwingConstants.CENTER));
         gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 3, 0, 0, 0.25, 0.25);
         scenButton.setContentAreaFilled(true);
         scenButton.setVisible(false);
-        mainPanel.add(scenButton, gbc);
-        mainPanel.setVisible(true);
+        projPanel.add(scenButton, gbc);
+        projPanel.setVisible(true);
+    }
+    
+    private static void buildScenarioPanel() {
+        scenPanel = new JPanel();
+        scenPanel.setLayout(new GridBagLayout());
+        scenPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        
+        basicScen = createPanel(new JPanel(), "Basic Information", scenPanel.getWidth(), scenPanel.getHeight(), false);
+        
+        JLabel scenNameLbl = new JLabel("Scenario Name", SwingConstants.RIGHT);
+        GridBagConstraints gbc = setGbc(new Insets(16, 70, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.2, 0.0);
+        basicScen.add(scenNameLbl, gbc);
+        
+        JTextField scenNameFld = new JTextField("PLACEHOLDER", 82);
+        gbc = setGbc(new Insets(0, 4, 0, 4), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.8, 0.0);
+        basicScen.add(scenNameFld, gbc);
+        
+        JLabel filler = new JLabel();
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 1, 2, 1.0, 0.0);
+        basicScen.add(filler, gbc);
+        
+        JLabel scenDescLbl = new JLabel("Scenario Description", SwingConstants.RIGHT);
+        gbc = setGbc(new Insets(0, 46, 16, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.2, 0.0);
+        basicScen.add(scenDescLbl, gbc);
+        
+        JTextArea scenDescFld = new JTextArea("Description PLACEHOLDER", 3, 60);
+        scenDescFld.setFont(f);
+        scenDescFld.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        gbc = setGbc(new Insets(0, 4, 4, 4), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 0.8, 0.0);
+        basicScen.add(scenDescFld, gbc);
+        
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
+        scenPanel.add(basicScen, gbc);
+        
+        bmps = createPanel(new JPanel(), "BMPs", scenPanel.getWidth(), scenPanel.getHeight(), false);
+        
+        btnDamSc = createScenarioPanelButton(new JButton("Small Dam", damIcon), "Select Small Dams", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 0, 1, 1, 0.0, 0.0);
+        bmps.add(btnDamSc, gbc);
+        
+        btnPondSc = createScenarioPanelButton(new JButton("Holding Pond", pondIcon), "Select Holding Ponds", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 0, 1, 1, 0.0, 0.0);
+        bmps.add(btnPondSc, gbc);
+        
+        btnGrazeSc = createScenarioPanelButton(new JButton("Grazing", grazeIcon), "Select Grazing Areas", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 0, 1, 1, 0.0, 0.0);
+        bmps.add(btnGrazeSc, gbc);
+
+        btnGrazeSc = createScenarioPanelButton(new JButton("Tillage", tillIcon), "Select Tillage Areas", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 0, 1, 1, 0.0, 0.0);
+        bmps.add(btnGrazeSc, gbc);
+
+        btnGrazeSc = createScenarioPanelButton(new JButton("Forage", forageIcon), "Select Foraging Areas", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 4, 0, 1, 1, 1.0, 0.0);
+        bmps.add(btnGrazeSc, gbc);
+        
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 1.0, 0.0);
+        scenPanel.add(bmps, gbc);
+        
+        control = createPanel(new JPanel(), "Controls", scenPanel.getWidth(), scenPanel.getHeight(), false);
+        
+        btnSaveSc = createScenarioPanelButton(new JButton("Save", saveScenIcon), "Save Scenario", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 0, 1, 1, 0.0, 0.0);
+        control.add(btnSaveSc , gbc);
+        
+        btnSaveAsSc = createScenarioPanelButton(new JButton("Save As", saveAsIcon), "Save Scenario As", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 0, 1, 1, 0.0, 0.0);
+        control.add(btnSaveAsSc , gbc);
+        
+        btnEconSc = createScenarioPanelButton(new JButton("Economic", econIcon), "Run Economic Model", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 0, 1, 1, 0.0, 0.0);
+        control.add(btnEconSc , gbc);
+        
+        btnSwatSc = createScenarioPanelButton(new JButton("SWAT", swatIcon), "Run SWAT Model", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 0, 1, 1, 0.0, 0.0);
+        control.add(btnSwatSc , gbc);
+        
+        btnResultSc = createScenarioPanelButton(new JButton("Results", resIcon), "View Scenario Results", null, null);
+        gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 4, 0, 1, 1, 1.0, 0.0);
+        control.add(btnResultSc, gbc);
+        
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 2, 1, 1, 1.0, 0.25);
+        scenPanel.add(control, gbc);
+        scenPanel.setVisible(false);
     }
     
     private static void buildProgressBar() {
         websProgressBar = new JProgressBar(0, 100);
         websProgressBar.setString(null);
         websProgressBar.setStringPainted(false);
-        progressLbl = new JLabel("TESTING FOR LAYOUT", SwingConstants.RIGHT);
+        progressLbl = new JLabel("", SwingConstants.RIGHT);
     }
     
     // Listener Classes
@@ -423,12 +584,6 @@ public class WEBsInterface extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent ae) {
             try {
                 NewProjectDialog npd = new NewProjectDialog();
-                basic.setVisible(true);
-                spatial.setVisible(true);
-                swat.setVisible(true);
-                scenButton.setVisible(true);
-                spatLocBtn.setVisible(true);
-                swatLocBtn.setVisible(true);
             } catch (IOException e) {
                 Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
             }
@@ -440,7 +595,6 @@ public class WEBsInterface extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent ae) {
             if(ae.getSource().equals(spatLocBtn)) {
                 try {
-                    System.out.println(spatLocation.getText());
                     Process pb = new ProcessBuilder("explorer.exe", "/select," + spatLocation.getText() + "\\spatial.db3").start();
                 } catch (IOException e) {
                     Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
@@ -448,7 +602,6 @@ public class WEBsInterface extends JFrame implements Runnable {
             }
             else if(ae.getSource().equals(swatLocBtn)) {
                 try {
-                    System.out.println(swatLocation.getText());
                     Process pb = new ProcessBuilder("explorer.exe", "/select," + swatLocation.getText() + "\\conventional").start();
                 } catch (IOException e) {
                     Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
@@ -462,16 +615,65 @@ public class WEBsInterface extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent ae) {
             try {
                 websProgressBar.setStringPainted(true);
-                cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-                ScenarioBuilder sc = new ScenarioBuilder("historic", true, true);
-                sc = new ScenarioBuilder("conventional", true, false);
+                frame.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                frame.getGlassPane().setVisible(true);
+                ScenarioBuilder scH = new ScenarioBuilder("historic", true, true);
+                ScenarioBuilder scC = new ScenarioBuilder("conventional", true, false);
                 websProgressBar.setStringPainted(false);
-                cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+                frame.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                frame.getGlassPane().setVisible(true);
+                progressLbl.setText("Completed");
+                websProgressBar.setValue(websProgressBar.getMinimum());
+                projPanel.setVisible(false);
+                scenPanel.setVisible(true);
+                basicScen.setVisible(true);
+                bmps.setVisible(true);
+                control.setVisible(true);
             } catch (ClassNotFoundException | SQLException | IOException e) {
                 Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }
+    
+    private static class buttonMouseListener implements MouseListener {
+        @Override
+        public void mouseClicked(MouseEvent me) {
+            
+        }
+
+        @Override
+        public void mousePressed(MouseEvent me) {
+            
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent me) {
+            
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent me) {
+            JButton src = (JButton) me.getSource();
+            if(src.isEnabled()) {
+                src.setContentAreaFilled(true);
+            }
+        }
+
+        @Override
+        public void mouseExited(MouseEvent me) {
+            JButton src = (JButton) me.getSource();
+            if(src.isEnabled()) {
+                src.setContentAreaFilled(false);
+            }
+        }
+    }
+    
+    /**
+     * 
+     * Main Method
+     * 
+     * @param args: Default Parameter.
+     */
     
     public static void main(String[] args) {
         // Set the Look and Feel of the Frame
@@ -485,11 +687,10 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.setLayout(new GridBagLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(frame.getWidth(), frame.getHeight());
-        frame.setPreferredSize(frameDim);
+        frame.setMinimumSize(frameDim);
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setIconImage(websIcon.getImage());
         frame.setTitle("WEBsInterface v0.10");
-        frame.setCursor(cursor);
         
         // Build the Top Toolbar
         buildTopPanel();
@@ -497,15 +698,15 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.add(topPanel, gbc);
         
         // Build the Database/Project File Structure Panel
-        buildDbPanel();
+        buildProjectTreePanel();
         gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 4, 24, 2), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 0, 1, 2, 0.15, 1.0);
         frame.add(dbPanel, gbc);
         
         // Build the Main Panel
-        buildMainPanel();
+        buildNewProjectPanel();
         gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 2, 2, 0.85, 1.0);
-        mainPanel.requestFocusInWindow();
-        frame.add(mainPanel, gbc);
+        projPanel.requestFocusInWindow();
+        frame.add(projPanel, gbc);
         
         // Build the Progress Bar & Label
         buildProgressBar();
@@ -513,6 +714,11 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.add(progressLbl, gbc);
         gbc = setGbc(new Insets(2, 2, 4, 4), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 2, 1, 1, 1, 0.85, 1.0);
         frame.add(websProgressBar, gbc);
+        
+        buildScenarioPanel();
+        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 2, 2, 0.85, 1.0);
+        scenPanel.requestFocusInWindow();
+        frame.add(scenPanel, gbc);
         
         // Pack and Display the Frame
         frame.pack();
@@ -523,5 +729,6 @@ public class WEBsInterface extends JFrame implements Runnable {
     @Override
     public void run() {
         WEBsInterface webs = new WEBsInterface();
+        
     }
 }

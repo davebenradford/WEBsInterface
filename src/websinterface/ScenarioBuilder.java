@@ -36,8 +36,8 @@ public class ScenarioBuilder {
     private static final File[] dbf_tbls = {new File("STC/Data/Spatial/small_dam.dbf"), new File("STC/Data/Spatial/cattle_yard.dbf"),
                                             new File("STC/Data/Spatial/grazing.dbf"), new File("STC/Data/Spatial/land2010_by_land_id.dbf"),
                                             new File("STC/Data/Spatial/farm2010.dbf")};
-    private static int progress = 0;
-    private static boolean scenarioType;
+    protected static double progress;
+    protected static boolean scenarioType;
 
     /**
      * @param scen: String containing the Scenario Name.
@@ -53,6 +53,7 @@ public class ScenarioBuilder {
     
     protected ScenarioBuilder(String scen, boolean isBase, boolean type) throws ClassNotFoundException, SQLException, IOException {
         String inDb;
+        progress = 0.0;
         scenarioType = type;
         Class.forName("org.sqlite.JDBC");
         
@@ -65,13 +66,11 @@ public class ScenarioBuilder {
         
         Connection cInDb3 = DriverManager.getConnection("jdbc:sqlite:" + spatial.getAbsolutePath());
         cInDb3.setAutoCommit(false);
-        WEBsInterface.progressLbl.setText("\nOpened spatial.db3 database successfully");
-        WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+        progress = WEBsInterface.calculateProgressBaseScenario("\nOpened spatial.db3 database successfully", scenarioType, progress);
 
         Connection cOutput = DriverManager.getConnection("jdbc:sqlite:" + inDb);
         cOutput.setAutoCommit(false);
-        WEBsInterface.progressLbl.setText("\nConnection established to " + inDb + " database successfully");
-        WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+        progress = WEBsInterface.calculateProgressBaseScenario("\nConnection established to " + inDb + " database successfully", scenarioType, progress);
         
         try {
             Statement inStmtA = cInDb3.createStatement();
@@ -183,8 +182,7 @@ public class ScenarioBuilder {
                 }
             }
             c.commit();
-            WEBsInterface.progressLbl.setText("\n" + scen + " database created successfully");
-            WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + scen + " database created successfully", scenarioType, progress);
         } catch (SQLException ex) {
             Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -252,8 +250,7 @@ public class ScenarioBuilder {
                 out.executeUpdate(writeFieldOutputQuery(inRs, ntp, sql, 0));
             }
             c.commit();
-            WEBsInterface.progressLbl.setText("\n" + outTbl + " database created successfully");
-            WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + outTbl + " database created successfully", scenarioType, progress);
         } catch (SQLException e) {
             Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e); 
         }
@@ -286,8 +283,7 @@ public class ScenarioBuilder {
             String sql = "INSERT INTO " + outTbl + "(" + outColumnNames + "VALUES(";
             writeFarmSubbasinOutputQueries(inRsFrm, inFld, inTblA, ntp, sql, out, "farm");
             c.commit();
-            WEBsInterface.progressLbl.setText("\n" + outTbl +" database created successfully");
-            WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + outTbl +" database created successfully", scenarioType, progress);
         } catch(SQLException e) {
             Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -314,8 +310,7 @@ public class ScenarioBuilder {
             String sql = "INSERT INTO " + outTbl + "(" + outColumnNames + "VALUES(";
             writeFarmSubbasinOutputQueries(inRsBsn, inFld, tblA, ntp, sql, out, "subbasin");
             c.commit();
-            WEBsInterface.progressLbl.setText("\n" + outTbl + " database created successfully");
-            WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + outTbl + " database created successfully", scenarioType, progress);
         } catch(SQLException e) {
             Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -336,8 +331,7 @@ public class ScenarioBuilder {
                 out.executeUpdate(writeDbfOutputQueries(s, sql));
             }
             c.commit();
-            WEBsInterface.progressLbl.setText("\n" + tbl + " database created successfully");
-            WEBsInterface.websProgressBar.setValue(calculateProgressBaseScenario(scenarioType, progress));
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + tbl + " database created successfully", scenarioType, progress);
         } catch (SQLException e) {
             Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -429,8 +423,7 @@ public class ScenarioBuilder {
         try {
             tbl.open(IfNonExistent.ERROR);
             temp = new ValueTypePair[tbl.getRecordCount()][columns.length];
-            System.out.println("\nOpened " + tbl.getName() + " database successfully");
-            
+            progress = WEBsInterface.calculateProgressBaseScenario("\nOpened " + tbl.getName() + " database successfully", scenarioType, progress);
             Iterator<Record> iter = tbl.recordIterator();
             for(int i = 0; i < tbl.getRecordCount(); i++) {
                 Record rec = iter.next();
@@ -769,23 +762,6 @@ public class ScenarioBuilder {
             areaSum += ivpArea[i].getPairValue() * ivpPct[i].getPairValue();
         }
         return areaCostSum / areaSum;
-    }
-    
-    /**
-     * 
-     * @param t: The boolean value used to determine the progress for historic
-     *           or conventional progress counter.
-     * @param p: The current value of the progress bar.
-     * @return The value to be added to the progress bar total.
-     */        
-    
-    private static int calculateProgressBaseScenario(boolean t, int p) {
-        if(t) {
-            return p += (int) 7.1428571;
-        }
-        else {
-            return p += (int) 16.667;
-        }
     }
         
     /**

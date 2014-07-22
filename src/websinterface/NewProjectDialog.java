@@ -203,7 +203,7 @@ public class NewProjectDialog {
     
     // File Chooser
     
-    private File getDirectory(){
+    private File getDirectory() {
         JFileChooser selector = new JFileChooser();
         selector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         selector.setSelectedFile(dataFile);
@@ -241,6 +241,12 @@ public class NewProjectDialog {
             WEBsInterface.projLocation.setText(projFld.getText());
             WEBsInterface.spatLocation.setText(spatFld.getText());
             WEBsInterface.swatLocation.setText(swatFld.getText());
+            WEBsInterface.basicProj.setVisible(true);
+            WEBsInterface.spatial.setVisible(true);
+            WEBsInterface.swat.setVisible(true);
+            WEBsInterface.scenButton.setVisible(true);
+            WEBsInterface.spatLocBtn.setVisible(true);
+            WEBsInterface.swatLocBtn.setVisible(true);
             frame.dispose();
         }
     }
