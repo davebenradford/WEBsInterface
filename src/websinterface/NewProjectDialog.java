@@ -248,6 +248,9 @@ public class NewProjectDialog {
             WEBsInterface.spatLocBtn.setVisible(true);
             WEBsInterface.swatLocBtn.setVisible(true);
             frame.dispose();
+            WEBsInterface.frame.revalidate();
+            WEBsInterface.projPanel.setVisible(true);
+            WEBsInterface.projPanel.repaint();
         }
     }
     

@@ -3,6 +3,7 @@ package websinterface;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import static java.awt.Cursor.getPredefinedCursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -13,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import static java.lang.Math.round;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,32 +29,32 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author Dave Radford
  * @since May 2014
  * @version 0.09
- 
- WEBs Interface (Java)
- 
- This project contains the modules for the Java Version of the CAN-SWAT UI.
- This class serves as the main/primary/core??? class for the entire project.
- 
- Project Version History
- 
- v0.01: Basic Frame established. Icon image added. Frame startup settings
-        initialized.
- v0.02: Begin adding components to startup frame. 
- v0.03: Align and adjust look and feel of startup frame.
- v0.04: Establish Listeners for startup frame, called 'newProjectDialog'
-        and 'newScenarioDialog.'
- v0.05: Built the New Project Dialog Box.
- v0.06: Condensed component creation into two methods and the GridBagLayout
-        weight setting values into one method, both for scalability.
- v0.07: Built the Main mapStatsPanel Scenario Pane. Cleaned up code for scalability
-        and efficiency.
- v0.08: Cleaning code, altering Component declarations for inter-package
-        class calls. Completed listener functionality for main panel buttons.
- v0.09: Creation of the ScenarioBuilder class.
- v0.10: ScenarioBuilder Class completed for Base Scenarios.
- v0.11: Scenario mapStatsPanel completed. Altering GUI elements and beginning to
-        assemble Project File.
- v0.12: Begin building Map &  BMP UI mapStatsPanel.
+ *
+ * WEBs Interface (Java)
+ * 
+ * This project contains the modules for the Java Version of the CAN-SWAT UI.
+ * This class serves as the main/primary/core??? class for the entire project.
+ *
+ * Project Version History
+ *
+ * v0.01: Basic Frame established. Icon image added. Frame startup settings
+ *        initialized.
+ * v0.02: Begin adding components to startup frame. 
+ * v0.03: Align and adjust look and feel of startup frame.
+ * v0.04: Establish Listeners for startup frame, called 'newProjectDialog'
+ *        and 'newScenarioDialog.'
+ * v0.05: Built the New Project Dialog Box.
+ * v0.06: Condensed component creation into two methods and the GridBagLayout
+ *        weight setting values into one method, both for scalability.
+ * v0.07: Built the Main mapStatsPanel Scenario Pane. Cleaned up code for scalability
+ *        and efficiency.
+ * v0.08: Cleaning code, altering Component declarations for inter-package
+ *        class calls. Completed listener functionality for main panel buttons.
+ * v0.09: Creation of the ScenarioBuilder class.
+ * v0.10: ScenarioBuilder Class completed for Base Scenarios.
+ * v0.11: Scenario mapStatsPanel completed. Altering GUI elements and beginning to
+ *        assemble Project File.
+ * v0.12: Begin building Map & BMP UI mapStatsPanel.
  * 
  */
 
@@ -62,7 +64,7 @@ public class WEBsInterface extends JFrame implements Runnable {
     
     private static final Dimension topBtnDim = new Dimension(80, 64);
     private static final Dimension pnlBtnDim = new Dimension(96, 64);
-    private static final Dimension frameDim = new Dimension(1300, 850);
+    private static final Dimension frameDim = new Dimension(1450, 950);
     private static final Font f = new Font("Sans_Serif", Font.PLAIN, 12);
     private static final ImageIcon newProjIcon = new ImageIcon("src\\images\\document_empty_32x32.png");
     private static final ImageIcon openProjIcon = new ImageIcon("src\\images\\folder_32x32.png");
@@ -86,8 +88,7 @@ public class WEBsInterface extends JFrame implements Runnable {
     // Swing Component Declarations
     
     private static JPanel topPanel;
-    private static JPanel dbPanel;
-    private static JPanel projPanel;
+    private static JPanel projTreePanel;
     private static JPanel scenPanel;
     private static JButton newProj;
     private static JButton openProj;
@@ -110,6 +111,7 @@ public class WEBsInterface extends JFrame implements Runnable {
     // Public Swing Components
     
     public static JFrame frame;
+    public static JPanel projPanel;
     public static JPanel basicProj;
     public static JPanel basicScen;
     public static JPanel bmpSection;
@@ -120,6 +122,10 @@ public class WEBsInterface extends JFrame implements Runnable {
     public static JPanel whiteBoxPanel;
     public static JPanel mapViewPanel;
     public static JPanel mapStatsPanel;
+    public static JPanel chartPanel;
+    public static JPanel legendPanel;
+    public static JPanel listPanel;
+    public static JPanel infoPanel;
     public static JLabel spatLocation;
     public static JLabel projLocation;
     public static JLabel swatLocation;
@@ -138,6 +144,8 @@ public class WEBsInterface extends JFrame implements Runnable {
     public static JButton btnSwatSc;
     public static JButton btnResultSc;
     public static JProgressBar websProgressBar; //PRIVATE?
+    
+    // Component Creation Methods
     
     /**
      *
@@ -208,7 +216,7 @@ public class WEBsInterface extends JFrame implements Runnable {
     
     /**
      * 
-     * Create mapStatsPanel Method
+     * Create Panel Method
      * 
      * @param pnl: The JPanel component being constructed.
      * @param s: The String containing the title for the JPanel.
@@ -218,10 +226,9 @@ public class WEBsInterface extends JFrame implements Runnable {
      * @return: Returns the JPanel to be added to the Container for which it was created. 
      */
     
-    private static JPanel createPanel(JPanel pnl, String s, int w, int h, Boolean v) {
+    private static JPanel createPanel(JPanel pnl, String s, Boolean v) {
         pnl.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), s, TitledBorder.LEFT, TitledBorder.TOP, f));
         pnl.setLayout(new GridBagLayout());
-        pnl.setSize(w, h);
         pnl.setVisible(v);
         return pnl;
     }
@@ -256,8 +263,6 @@ public class WEBsInterface extends JFrame implements Runnable {
         return g;
     }
     
-    // Progress Bar Class
-    
     /**
      * 
      * Calculating Progress Bar Value Method
@@ -278,13 +283,13 @@ public class WEBsInterface extends JFrame implements Runnable {
         else {
             progress += 16.666666667;
         }
-        websProgressBar.setValue((int) Math.round(progress));
+        websProgressBar.setValue((int) round(progress));
         websProgressBar.revalidate();
         websProgressBar.repaint();
         return progress;
     }
     
-    // Build Classes
+    // UI Builder Methods
     
     private static void buildTopPanel() {
         // Initalize the Top Button mapStatsPanel
@@ -293,7 +298,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         Border b = BorderFactory.createEmptyBorder();
         newProj = createTopPanelButton(new JButton("New Project", newProjIcon), "New Project", b, true, new newProjListener(), new buttonMouseListener());
         
-        // Resize Top mapStatsPanel
+        // Resize Top Panel
         Dimension topDim = new Dimension(frame.getMaximumSize().width, newProj.getMaximumSize().height);
         Dimension sepDim = new Dimension(frame.getPreferredSize().width, newProj.getHeight());
         topPanel.setSize(topDim);
@@ -366,11 +371,10 @@ public class WEBsInterface extends JFrame implements Runnable {
     }
     
     private static void buildProjectTreePanel() {
-        dbPanel = new JPanel();
-        dbPanel.setLayout(new GridBagLayout());
-        dbPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        dbPanel.setBackground(Color.WHITE);
-        dbPanel.setToolTipText("This is the Database/File Structure Panel.");
+        projTreePanel = new JPanel(new GridBagLayout());
+        projTreePanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        projTreePanel.setBackground(Color.WHITE);
+        projTreePanel.setToolTipText("This is the Project Tree Panel.");
         
         DefaultMutableTreeNode projNode = new DefaultMutableTreeNode("Project");
         DefaultMutableTreeNode scenNode = new DefaultMutableTreeNode("Base Scenario"); // Generic Node without having an Object Name? May be necessary.
@@ -383,147 +387,140 @@ public class WEBsInterface extends JFrame implements Runnable {
         scenNode.add(new DefaultMutableTreeNode("Results"));
         projNode.add(scenNode);
         
-        treePanel = new JPanel();
-        treePanel.setLayout(new GridBagLayout());
-        treePanel.setPreferredSize(new Dimension(dbPanel.getWidth(), dbPanel.getHeight()));
+        treePanel = new JPanel(new GridBagLayout());
+        treePanel.setPreferredSize(new Dimension(projTreePanel.getWidth(), projTreePanel.getHeight()));
         treePanel.setBackground(Color.WHITE);
         treePanel.setVisible(true);
-        GridBagConstraints gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 0.1, 0.0);
+        GridBagConstraints gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 0.2, 0.0);
         treePanel.add(tree, gbc);
         
         JLabel filler = new JLabel();
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 0, 2, 2, 0.9, 0.9);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 0, 2, 2, 0.8, 0.9);
         treePanel.add(filler, gbc);
-        dbPanel.add(treePanel, gbc);
-        dbPanel.setVisible(true);
+        projTreePanel.add(treePanel, gbc);
+        projTreePanel.setVisible(true);
     }
     
     private static void buildNewProjectPanel() {
-        projPanel = new JPanel();
-        projPanel.setLayout(new GridBagLayout());
+        projPanel = new JPanel(new GridBagLayout());
         projPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         
         Border b = BorderFactory.createRaisedBevelBorder();
-        basicProj = createPanel(new JPanel(), "Basic Information", projPanel.getWidth(), projPanel.getHeight(), false);
+        basicProj = createPanel(new JPanel(), "Basic Information", false);
         
         JLabel wsNameLbl = new JLabel("Watershed Name", SwingConstants.RIGHT);
-        GridBagConstraints gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.0, 0.0);
+        GridBagConstraints gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.0, 0.0);
         basicProj.add(wsNameLbl, gbc);
         
         JTextField wsNameFld = new JTextField("STC", 40);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 2.0, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.75, 0.0);
         basicProj.add(wsNameFld, gbc);
         
-        JLabel filler = new JLabel();
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 2, 1, 1.0, 0.0);
-        basicProj.add(filler, gbc);
-        
         JLabel projLocLbl = new JLabel("Project File", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 46, 16, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.2, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.05, 0.0);
         basicProj.add(projLocLbl, gbc);
         
         projLocation = new JLabel("C:\\", SwingConstants.LEFT);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 0.75, 0.0);
         basicProj.add(projLocation, gbc);
         
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(0, 32, 0, 32), GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 0, 1, 1, 0.75, 0.0);
         projPanel.add(basicProj, gbc);
         
-        spatial = createPanel(new JPanel(), "Spatial Data", projPanel.getWidth(), projPanel.getHeight(), false);
+        spatial = createPanel(new JPanel(), "Spatial Data", false);
         
         JLabel spatLocLbl = new JLabel("Spatial Data Folder", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 6, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
         spatial.add(spatLocLbl, gbc);
         
         spatLocation = new JLabel("C:\\", SwingConstants.LEFT);
-        gbc = setGbc(new Insets(0, 8, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.9, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.75, 0.0);
         spatial.add(spatLocation, gbc);
         
         spatLocBtn = createTopPanelButton(new JButton(smOpenProjIcon), "Show the Spatial Data Folder in Explorer.", b, true, new openLocationListener(), null);
         spatLocBtn.setVisible(false);
         spatLocBtn.setPreferredSize(new Dimension(32, 32));
-        gbc = setGbc(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 1, 3, 0.0, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 1, 1, 3, 0.0, 0.0);
         spatial.add(spatLocBtn, gbc);
         
         JLabel smDamLbl = new JLabel("Small Dam", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 48, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 2, 1, 1, 0.05, 0.0);
         spatial.add(smDamLbl, gbc);
         
         JTextField smDamFld = new JTextField("small_dam", 40);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 0.95, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, 1, 1, 0.75, 0.0);
         spatial.add(smDamFld, gbc);
         
         JLabel pondLbl = new JLabel("Holding Pond", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 34, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 3, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 3, 1, 1, 0.05, 0.0);
         spatial.add(pondLbl, gbc);
         
         JTextField pondFld = new JTextField("cattle_yard", 40);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 3, 1, 1, 0.95, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 3, 1, 1, 0.75, 0.0);
         spatial.add(pondFld, gbc);
         
         JLabel grazeLbl = new JLabel("Grazing", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 60, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 4, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 4, 1, 1, 0.05, 0.0);
         spatial.add(grazeLbl, gbc);
         
         JTextField grazeFld = new JTextField("grazing", 40);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 4, 1, 1, 0.95, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 4, 1, 1, 0.75, 0.0);
         spatial.add(grazeFld, gbc);
         
         JLabel fieldLbl = new JLabel("Field", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 74, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 5, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 5, 1, 1, 0.05, 0.0);
         spatial.add(fieldLbl, gbc);
         
         JTextField fieldFld = new JTextField("land2010_by_land_id", 40);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 5, 1, 1, 0.95, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 5, 1, 1, 0.75, 0.0);
         spatial.add(fieldFld, gbc);
 
         JLabel farmLbl = new JLabel("Farm", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 74, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 6, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 24, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 6, 1, 1, 0.05, 0.0);
         spatial.add(farmLbl, gbc);
         
         JTextField farmFld = new JTextField("farm2010", 40);
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 6, 1, 1, 0.95, 1.0);
+        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 6, 1, 1, 0.75, 1.0);
         spatial.add(farmFld, gbc);
         
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(0, 32, 0, 32), GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1, 0.75, 0.0);
         projPanel.add(spatial, gbc);
         
-        swat = createPanel(new JPanel(), "SWAT Data", projPanel.getWidth(), projPanel.getHeight(), false);
+        swat = createPanel(new JPanel(), "SWAT Data", false);
         
         JLabel swatLocLbl = new JLabel("SWAT Data Folder", SwingConstants.RIGHT);
-        gbc = setGbc(new Insets(16, 10, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
+        gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.05, 0.0);
         swat.add(swatLocLbl, gbc);
         
         swatLocation = new JLabel("C:\\", SwingConstants.LEFT);
-        gbc = setGbc(new Insets(16, 0, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 1, 1, 0.75, 0.0);
         swat.add(swatLocation, gbc);
         
         swatLocBtn = createTopPanelButton(new JButton(smOpenProjIcon), "Show the SWAT Data Folder in Explorer.", b, true, new openLocationListener(), null);
         swatLocBtn.setVisible(false);
         swatLocBtn.setPreferredSize(new Dimension(32, 32));
-        gbc = setGbc(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 1, 1, 0.0, 0.0);
+        gbc = setGbc(new Insets(0, 0, 0, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 1, 1, 1, 0.0, 0.0);
         swat.add(swatLocBtn, gbc);
         
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 0, 2, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(0, 32, 0, 32), GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 2, 1, 1, 0.75, 0.0);
         projPanel.add(swat, gbc);
         
         scenButton = createScenarioPanelButton(new JButton(), "Builds the Base Historical and Conventional Scenarios.", new baseScenarioListener(), null);
         scenButton.setLayout(new BorderLayout());
         scenButton.add(BorderLayout.CENTER, new JLabel("Create Base", SwingConstants.CENTER));
         scenButton.add(BorderLayout.SOUTH, new JLabel(" Scenarios ", SwingConstants.CENTER));
-        gbc = setGbc(new Insets(16, 16, 16, 16), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 3, 0, 0, 0.25, 0.25);
+        
+        gbc = setGbc(new Insets(16, 32, 16, 16), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 3, 0, 0, 0.0, 0.25);
         scenButton.setContentAreaFilled(true);
         scenButton.setVisible(false);
         projPanel.add(scenButton, gbc);
-        projPanel.setVisible(false); // Hidden
     }
     
     private static void buildScenarioPanel() {
-        scenPanel = new JPanel();
-        scenPanel.setLayout(new GridBagLayout());
+        scenPanel = new JPanel(new GridBagLayout());
         scenPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         
-        basicScen = createPanel(new JPanel(), "Basic Information", scenPanel.getWidth(), scenPanel.getHeight(), false);
+        basicScen = createPanel(new JPanel(), "Basic Information", false);
         
         JLabel scenNameLbl = new JLabel("Scenario Name", SwingConstants.RIGHT);
         GridBagConstraints gbc = setGbc(new Insets(16, 70, 16, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 1, 1, 1, 0.2, 0.0);
@@ -550,7 +547,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
         scenPanel.add(basicScen, gbc);
         
-        bmpSection = createPanel(new JPanel(), "BMPs", scenPanel.getWidth(), scenPanel.getHeight(), false);
+        bmpSection = createPanel(new JPanel(), "BMPs", false);
         
         btnDamSc = createScenarioPanelButton(new JButton("Small Dam", damIcon), "Select Small Dams", null, null);
         gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 0, 1, 1, 0.0, 0.0);
@@ -575,7 +572,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 1.0, 0.0);
         scenPanel.add(bmpSection, gbc);
         
-        controlSection = createPanel(new JPanel(), "Controls", scenPanel.getWidth(), scenPanel.getHeight(), false);
+        controlSection = createPanel(new JPanel(), "Controls", false);
         
         btnSaveSc = createScenarioPanelButton(new JButton("Save", saveScenIcon), "Save Scenario", null, null);
         gbc = setGbc(new Insets(4, 16, 4, 16), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 0, 1, 1, 0.0, 0.0);
@@ -599,40 +596,54 @@ public class WEBsInterface extends JFrame implements Runnable {
         
         gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 2, 1, 1, 1.0, 0.25);
         scenPanel.add(controlSection, gbc);
-        scenPanel.setVisible(false);
+        scenPanel.validate();
     }
     
     private static void buildWhiteBoxPanel() {
-        mapViewPanel = new JPanel();
-        mapViewPanel.setLayout(new GridBagLayout());
-        mapViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        mapViewPanel.setBackground(Color.WHITE);
+        whiteBoxPanel = new JPanel(new GridBagLayout());
         
-        mapStatsPanel = new JPanel();
-        mapStatsPanel.setLayout(new GridBagLayout());
+        legendPanel = new JPanel();
+        legendPanel.setBorder(BorderFactory.createLoweredBevelBorder());        
+        legendPanel.setBackground(Color.WHITE);
+        
+        GridBagConstraints gbc = setGbc(new Insets(0, 2, 2, 0), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 0, 1, 2, 0.2, 0.7);
+        whiteBoxPanel.add(legendPanel, gbc);
+        
+        mapViewPanel = new JPanel();
+        mapViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        mapViewPanel.setBackground(Color.WHITE);        
+        
+        gbc = setGbc(new Insets(0, 2, 2, 0), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 1, 2, 0.8, 0.7);
+        whiteBoxPanel.add(mapViewPanel, gbc);
+        
+        chartPanel = new JPanel();
+        chartPanel.setBorder(BorderFactory.createLoweredBevelBorder());        
+        chartPanel.setBackground(Color.WHITE);
+            
+        gbc = setGbc(new Insets(2, 2, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.EAST, 0, 2, 2, 1, 1.0, 0.3);
+        whiteBoxPanel.add(chartPanel, gbc);
+        
+        mapStatsPanel = new JPanel(new GridBagLayout());
         mapStatsPanel.setBorder(BorderFactory.createEmptyBorder());
         
-        GridBagConstraints gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(0, 0, 2, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 1.0, 0.0);
         mapStatsPanel.add(new JButton(" Select All "), gbc);
         
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 0, 1, 1, 1.0, 0.0);
+        gbc = setGbc(new Insets(0, 0, 2, 0), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 0, 1, 1, 1.0, 0.0);
         mapStatsPanel.add(new JButton("Deselect All"), gbc);
         
-        JPanel listPanel = new JPanel();
+        listPanel = new JPanel();
         listPanel.setBackground(Color.WHITE);
         listPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 0, 1, 2, 3, 1.0, 0.8);
+        gbc = setGbc(new Insets(2, 0, 2, 0), GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 0, 1, 2, 3, 1.0, 0.8);
         mapStatsPanel.add(listPanel, gbc);
         
-        JPanel infoPanel = new JPanel();
-        //infoPanel.setBackground(Color.GRAY);
+        infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         
-        gbc = setGbc(new Insets(0, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 0, 4, 2, 1, 1.0, 0.2);
+        gbc = setGbc(new Insets(2, 0, 0, 0), GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 0, 4, 2, 1, 1.0, 0.2);
         mapStatsPanel.add(infoPanel, gbc);
-        
-        JPanel chartPanel = new JPanel();
     }
     
     private static void buildProgressBar() {
@@ -680,20 +691,22 @@ public class WEBsInterface extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent ae) {
             try {
                 websProgressBar.setStringPainted(true);
-                frame.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                frame.getGlassPane().setCursor(getPredefinedCursor(Cursor.WAIT_CURSOR));
                 frame.getGlassPane().setVisible(true);
                 ScenarioBuilder scH = new ScenarioBuilder("historic", true, true);
                 ScenarioBuilder scC = new ScenarioBuilder("conventional", true, false);
                 websProgressBar.setStringPainted(false);
-                frame.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                frame.getGlassPane().setCursor(getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 frame.getGlassPane().setVisible(true);
                 progressLbl.setText("Completed");
                 websProgressBar.setValue(websProgressBar.getMinimum());
                 projPanel.setVisible(false);
                 scenPanel.setVisible(true);
+                scenPanel.requestFocusInWindow();
                 basicScen.setVisible(true);
                 bmpSection.setVisible(true);
                 controlSection.setVisible(true);
+                frame.validate();
             } catch (ClassNotFoundException | SQLException | IOException e) {
                 Logger.getLogger(WEBsInterface.class.getName()).log(Level.SEVERE, null, e);
             }
@@ -755,54 +768,57 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.setMinimumSize(frameDim);
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setIconImage(websIcon.getImage());
-        frame.setTitle("WEBsInterface v0.10");
+        frame.setTitle("WEBsInterface v0.12");
         
         // Build the Top Toolbar
         buildTopPanel();
-        GridBagConstraints gbc = setGbc(new Insets(4, 4, 4, 4), GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 0, 0, 3, 1, 1, 0.3);
+        GridBagConstraints gbc = setGbc(new Insets(4, 4, 4, 4), GridBagConstraints.NONE, GridBagConstraints.WEST, 0, 0, 4, 1, 1.0, 0.0);
         frame.add(topPanel, gbc);
         
         // Build the Database/Project File Structure mapStatsPanel
         buildProjectTreePanel();
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 4, 24, 2), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 0, 1, 2, 0.15, 1.0);
-        frame.add(dbPanel, gbc);
+        gbc = setGbc(new Insets(4, 4, 22, 2), GridBagConstraints.BOTH, GridBagConstraints.WEST, 0, 1, 1, 2, 0.2, 1.0);
+        frame.add(projTreePanel, gbc);
         
         // Build the Main mapStatsPanel
         buildNewProjectPanel();
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 2, 2, 0.85, 1.0);
+        gbc = setGbc(new Insets(4, 2, 22, 4), GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 3, 2, 0.7, 1.0);
         projPanel.requestFocusInWindow();
         frame.add(projPanel, gbc);
         
         // Build the Progress Bar & Label
         buildProgressBar();
-        gbc = setGbc(new Insets(2, 2, 4, 154), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 3, 1, 1, 1, 0.15, 1.0);
+        gbc = setGbc(new Insets(0, 2, 4, 154), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 3, 2, 1, 1, 0.15, 0.0);
         frame.add(progressLbl, gbc);
-        gbc = setGbc(new Insets(2, 2, 4, 4), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 3, 1, 1, 1, 0.85, 1.0);
+        gbc = setGbc(new Insets(0, 2, 4, 4), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 3, 2, 1, 1, 0.85, 0.0);
         frame.add(websProgressBar, gbc);
         
         // Build the Scenario Panel
         buildScenarioPanel();
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 2, 2, 0.85, 1.0);
-        scenPanel.requestFocusInWindow();
+        gbc = setGbc(new Insets(4, 2, 22, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 1, 3, 2, 0.7, 1.0);
         frame.add(scenPanel, gbc);
         
         // Build the WhiteBox Panel
         buildWhiteBoxPanel();
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 0, 2, 2, 0.7, 1.0);
-        frame.add(mapViewPanel, gbc);
-
-        gbc = setGbc(new Insets((topPanel.getPreferredSize().height + 8), 2, 24, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 3, 0, 1, 2, 1.0, 1.0);
+        gbc = setGbc(new Insets(4, 2, 22, 4), GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 2, 2, 0.7, 1.0);
+        frame.add(whiteBoxPanel, gbc);
+        
+        // Add MapStats Panel
+        gbc = setGbc(new Insets(4, 2, 22, 4), GridBagConstraints.BOTH, GridBagConstraints.EAST, 3, 1, 1, 2, 1.0, 1.0);
         frame.add(mapStatsPanel, gbc);
         
         // Pack and Display the Frame
         frame.pack();
         frame.validate();
         frame.setVisible(true);
+        projPanel.setVisible(false);
+        scenPanel.setVisible(false);
+        whiteBoxPanel.setVisible(false);
+        mapStatsPanel.setVisible(false);
     }
     
     @Override
     public void run() {
         WEBsInterface webs = new WEBsInterface();
-        
     }
 }
