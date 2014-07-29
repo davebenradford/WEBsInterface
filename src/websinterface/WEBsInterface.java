@@ -3,7 +3,6 @@ package websinterface;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import static java.awt.Cursor.getPredefinedCursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -14,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import static java.lang.Math.round;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -283,7 +281,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         else {
             progress += 16.666666667;
         }
-        websProgressBar.setValue((int) round(progress));
+        websProgressBar.setValue((int) Math.round(progress));
         websProgressBar.revalidate();
         websProgressBar.repaint();
         return progress;
@@ -691,12 +689,12 @@ public class WEBsInterface extends JFrame implements Runnable {
         public void actionPerformed(ActionEvent ae) {
             try {
                 websProgressBar.setStringPainted(true);
-                frame.getGlassPane().setCursor(getPredefinedCursor(Cursor.WAIT_CURSOR));
+                frame.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 frame.getGlassPane().setVisible(true);
                 ScenarioBuilder scH = new ScenarioBuilder("historic", true, true);
                 ScenarioBuilder scC = new ScenarioBuilder("conventional", true, false);
                 websProgressBar.setStringPainted(false);
-                frame.getGlassPane().setCursor(getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                frame.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 frame.getGlassPane().setVisible(true);
                 progressLbl.setText("Completed");
                 websProgressBar.setValue(websProgressBar.getMinimum());
