@@ -21,23 +21,12 @@ package websinterface;
 
 import java.io.File;
 import java.io.IOException;
-import static java.lang.Class.forName;
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
-import static java.lang.System.arraycopy;
 import java.sql.*;
-import static java.sql.DriverManager.getConnection;
-import static java.sql.DriverManager.getConnection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static java.util.logging.Logger.getLogger;
-import nl.knaw.dans.common.dbflib.CorruptedTableException;
-import nl.knaw.dans.common.dbflib.IfNonExistent;
-import nl.knaw.dans.common.dbflib.Record;
-import nl.knaw.dans.common.dbflib.Table;
-import static websinterface.WEBsInterface.calculateProgressBaseScenario;
+import nl.knaw.dans.common.dbflib.*;
 
 public class ScenarioBuilder {
     private static final File spatial = new File("STC/Data/Spatial/spatial.db3");
@@ -63,7 +52,7 @@ public class ScenarioBuilder {
         String inDb;
         progress = 0.0;
         scenarioType = type;
-        forName("org.sqlite.JDBC");
+        Class.forName("org.sqlite.JDBC");
         
         if(isBase) {
             inDb = "base_" + scen + ".db3";
@@ -72,13 +61,13 @@ public class ScenarioBuilder {
             inDb = scen + ".db3";
         }
         
-        Connection cInDb3 = getConnection("jdbc:sqlite:" + spatial.getAbsolutePath());
+        Connection cInDb3 = DriverManager.getConnection("jdbc:sqlite:" + spatial.getAbsolutePath());
         cInDb3.setAutoCommit(false);
-        progress = calculateProgressBaseScenario("\nOpened spatial.db3 database successfully", scenarioType, progress);
+        progress = WEBsInterface.calculateProgressBaseScenario("\nOpened spatial.db3 database successfully", scenarioType, progress);
 
-        Connection cOutput = getConnection("jdbc:sqlite:" + inDb);
+        Connection cOutput = DriverManager.getConnection("jdbc:sqlite:" + inDb);
         cOutput.setAutoCommit(false);
-        progress = calculateProgressBaseScenario("\nConnection established to " + inDb + " database successfully", scenarioType, progress);
+        progress = WEBsInterface.calculateProgressBaseScenario("\nConnection established to " + inDb + " database successfully", scenarioType, progress);
         
         try {
             Statement inStmtA = cInDb3.createStatement();
@@ -105,7 +94,7 @@ public class ScenarioBuilder {
                 buildHistoricScenario(inStmtA, inStmtB, outStmt, cOutput);
             }
         } catch(SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             cOutput.close();
             cInDb3.close();
@@ -190,9 +179,9 @@ public class ScenarioBuilder {
                 }
             }
             c.commit();
-            progress = calculateProgressBaseScenario("\n" + scen + " database created successfully", scenarioType, progress);
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + scen + " database created successfully", scenarioType, progress);
         } catch (SQLException ex) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -228,7 +217,7 @@ public class ScenarioBuilder {
             src = loadGrazingHruData(src, inA, out, "subbasin_grazing_hru", "grazing_economic_subbasins");
             buildDbfTables(src, out, c, "grazing_hrus");
         } catch (IOException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -258,9 +247,9 @@ public class ScenarioBuilder {
                 out.executeUpdate(writeFieldOutputQuery(inRs, ntp, sql, 0));
             }
             c.commit();
-            progress = calculateProgressBaseScenario("\n" + outTbl + " database created successfully", scenarioType, progress);
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + outTbl + " database created successfully", scenarioType, progress);
         } catch (SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e); 
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e); 
         }
     }
     
@@ -291,9 +280,9 @@ public class ScenarioBuilder {
             String sql = "INSERT INTO " + outTbl + "(" + outColumnNames + "VALUES(";
             writeFarmSubbasinOutputQueries(inRsFrm, inFld, inTblA, ntp, sql, out, "farm");
             c.commit();
-            progress = calculateProgressBaseScenario("\n" + outTbl +" database created successfully", scenarioType, progress);
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + outTbl +" database created successfully", scenarioType, progress);
         } catch(SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -318,9 +307,9 @@ public class ScenarioBuilder {
             String sql = "INSERT INTO " + outTbl + "(" + outColumnNames + "VALUES(";
             writeFarmSubbasinOutputQueries(inRsBsn, inFld, tblA, ntp, sql, out, "subbasin");
             c.commit();
-            progress = calculateProgressBaseScenario("\n" + outTbl + " database created successfully", scenarioType, progress);
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + outTbl + " database created successfully", scenarioType, progress);
         } catch(SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
     }
      
@@ -339,9 +328,9 @@ public class ScenarioBuilder {
                 out.executeUpdate(writeDbfOutputQueries(s, sql));
             }
             c.commit();
-            progress = calculateProgressBaseScenario("\n" + tbl + " database created successfully", scenarioType, progress);
+            progress = WEBsInterface.calculateProgressBaseScenario("\n" + tbl + " database created successfully", scenarioType, progress);
         } catch (SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -373,7 +362,7 @@ public class ScenarioBuilder {
                 }
             }
         } catch (SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         return ntp;
     }
@@ -404,7 +393,7 @@ public class ScenarioBuilder {
                 }
             }
         } catch (SQLException e){
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         return outColumnNames;
     }
@@ -431,7 +420,7 @@ public class ScenarioBuilder {
         try {
             tbl.open(IfNonExistent.ERROR);
             temp = new ValueTypePair[tbl.getRecordCount()][columns.length];
-            progress = calculateProgressBaseScenario("\nOpened " + tbl.getName() + " database successfully", scenarioType, progress);
+            progress = WEBsInterface.calculateProgressBaseScenario("\nOpened " + tbl.getName() + " database successfully", scenarioType, progress);
             Iterator<Record> iter = tbl.recordIterator();
             for(int i = 0; i < tbl.getRecordCount(); i++) {
                 Record rec = iter.next();
@@ -450,9 +439,9 @@ public class ScenarioBuilder {
                 }
             }
             vals = new ValueTypePair[entries][columns.length];
-            arraycopy(temp, 0, vals, 0, vals.length);
+            System.arraycopy(temp, 0, vals, 0, vals.length);
         } catch (CorruptedTableException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         finally {
             tbl.close();
@@ -616,8 +605,8 @@ public class ScenarioBuilder {
                         }
                         IdValuePair[] grazeArea = new IdValuePair[k];
                         IdValuePair[] grazePct = new IdValuePair[k];
-                        arraycopy(iTempArea, 0, grazeArea, 0, k);
-                        arraycopy(iTempPct, 0, grazePct, 0, k);
+                        System.arraycopy(iTempArea, 0, grazeArea, 0, k);
+                        System.arraycopy(iTempPct, 0, grazePct, 0, k);
                         double cost = calculateGrazingMeanCost(grazeArea, grazePct, vtp);
                         int year = 1991;
                         for(int i = 0; i < 20; i++) {
@@ -632,10 +621,10 @@ public class ScenarioBuilder {
                 }
             }
         } catch (SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         ValueTypePair[][] vals = new ValueTypePair[index * 20][3];
-        arraycopy(vTemp, 0, vals, 0, vals.length);
+        System.arraycopy(vTemp, 0, vals, 0, vals.length);
         return vals;
     }
     
@@ -666,10 +655,10 @@ public class ScenarioBuilder {
             }
             length = index;
         } catch (SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         ValueTypePair[][] vals = new ValueTypePair[length][1];
-        arraycopy(temp, 0, vals, 0, length);
+        System.arraycopy(temp, 0, vals, 0, length);
         return vals;
     }
     
@@ -681,7 +670,7 @@ public class ScenarioBuilder {
      */
     
     private static double calculateSmallDamCost(double m, double l) {
-        return (4.87e-7 * pow(m, 3.0) - 4.24e-3 * pow(m, 2.0) + 1.28e1 * m + 6.71e3) / l;
+        return (4.87e-7 * Math.pow(m, 3.0) - 4.24e-3 * Math.pow(m, 2.0) + 1.28e1 * m + 6.71e3) / l;
     }
     
     /**
@@ -696,14 +685,14 @@ public class ScenarioBuilder {
      */
     
     private static double calculatePondBaseCost(double catl, double clay, double plst, double wire, double dist, double trch) {
-        double sqrtC = sqrt(catl);
+        double sqrtC = Math.sqrt(catl);
         double eqn1 = 2.232 * catl + 11.338 * sqrtC;
         double eqn2 = 3.72 * catl + trch * 7.94 * sqrtC + 0.844 * dist + clay * eqn1;
 
         double eqn3 = (0.5 * 9.5 + 7.47) * eqn1;
 
-        double max = 1.38e-10 * pow(eqn2,2.0) - 5.027e-5 * eqn2 + 6.736 + clay * eqn3
-        + plst / 0.7 * eqn3 + wire * (189.0 + sqrt(820.0 * catl)) + 10000.0;
+        double max = 1.38e-10 * Math.pow(eqn2,2.0) - 5.027e-5 * eqn2 + 6.736 + clay * eqn3
+        + plst / 0.7 * eqn3 + wire * (189.0 + Math.sqrt(820.0 * catl)) + 10000.0;
         
         max *= 1.1483;
 
@@ -711,8 +700,8 @@ public class ScenarioBuilder {
         eqn2 = 2.52 * catl + trch * 6.54 * sqrtC + 0.844 * dist + clay * eqn1;
         eqn3 = (0.5 * 9.5 + 7.47) * eqn1;
         
-        double min = 1.38e-10 * pow(eqn2, 2.0) - 5.027e-5 * eqn2 + 6.736 + clay * eqn3
-        + plst / 0.7 * eqn3 + wire * (189.0 + sqrt(556.0 * catl)) + 10000.0;
+        double min = 1.38e-10 * Math.pow(eqn2, 2.0) - 5.027e-5 * eqn2 + 6.736 + clay * eqn3
+        + plst / 0.7 * eqn3 + wire * (189.0 + Math.sqrt(556.0 * catl)) + 10000.0;
         
         min *= 1.1483;
 
@@ -727,15 +716,15 @@ public class ScenarioBuilder {
      */
     
     private static double calculatePondMaintenanceCost(double catl, double wire) {
-        double eqn = 0.03048 * pow(sqrt(1.68 * catl) - 6,2.0);
+        double eqn = 0.03048 * Math.pow(Math.sqrt(1.68 * catl) - 6,2.0);
 
-        double min = 1.38e-10 * pow(eqn, 2.0) - 5.027e-5 * eqn + 6.737
-        + wire * (24.48 + 3.05 * sqrt(catl)) + 1.25 * catl;
+        double min = 1.38e-10 * Math.pow(eqn, 2.0) - 5.027e-5 * eqn + 6.737
+        + wire * (24.48 + 3.05 * Math.sqrt(catl)) + 1.25 * catl;
 
-        eqn = 0.03048 * pow(sqrt(2.48 * catl) - 6, 2.0);
+        eqn = 0.03048 * Math.pow(Math.sqrt(2.48 * catl) - 6, 2.0);
 
-        double max = 1.38e-10 * pow(eqn, 2.0) - 5.027e-5 * eqn + 6.737
-        + wire * (24.48 + 3.71 * sqrt(catl)) + 1.85 * catl;
+        double max = 1.38e-10 * Math.pow(eqn, 2.0) - 5.027e-5 * eqn + 6.737
+        + wire * (24.48 + 3.71 * Math.sqrt(catl)) + 1.85 * catl;
 
         return min / 2.0 + max / 2.0;
     }
@@ -800,7 +789,7 @@ public class ScenarioBuilder {
             }
             return sql;
         } catch(SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         return "";
     }
@@ -853,9 +842,9 @@ public class ScenarioBuilder {
                             }
                             else {
                                 temp = new IdValuePair[ivp.length];
-                                arraycopy(ivp, 0, temp, 0, temp.length);
+                                System.arraycopy(ivp, 0, temp, 0, temp.length);
                                 ivp = new IdValuePair[temp.length + 1];
-                                arraycopy(temp, 0, ivp, 0, temp.length);
+                                System.arraycopy(temp, 0, ivp, 0, temp.length);
                                 ivp[index] = new IdValuePair(rsField.getInt("field"), rsField.getDouble("percent"));
                                 index++;
                             }
@@ -876,7 +865,7 @@ public class ScenarioBuilder {
 
                                     }
                                 } catch(SQLException e) {
-                                    getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+                                    Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
                                 }
                                 i++;
                             }
@@ -903,7 +892,7 @@ public class ScenarioBuilder {
                 }
             }
         } catch(SQLException e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -937,7 +926,7 @@ public class ScenarioBuilder {
             }
             return sql;
         } catch(Exception  e) {
-            getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ScenarioBuilder.class.getName()).log(Level.SEVERE, null, e);
         }
         return "";
     }
