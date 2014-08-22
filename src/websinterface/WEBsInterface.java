@@ -14,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -22,8 +21,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
-import whitebox.cartographic.MapArea;
-import whitebox.cartographic.MapInfo;
 
 /**
  *
@@ -146,10 +143,6 @@ public class WEBsInterface extends JFrame implements Runnable {
     public static JButton btnResultSc;
     public static JProgressBar websProgressBar; //PRIVATE?
     
-    private static ArrayList<MapInfo> openMaps = new ArrayList<>();
-    private static int activeMap = 0;
-    private static MapRenderer mapViewArea = new MapRenderer();
-    
     // Component Creation Methods
     
     /**
@@ -236,10 +229,6 @@ public class WEBsInterface extends JFrame implements Runnable {
         pnl.setLayout(new GridBagLayout());
         pnl.setVisible(v);
         return pnl;
-    }
-    
-    private static void createMapArea() {
-        LoadMapRenderer lmrt = new LoadMapRenderer();
     }
     
     /**
@@ -620,8 +609,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         
         mapViewPanel = new JPanel();
         mapViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        mapViewPanel.setBackground(Color.WHITE);
-        mapViewPanel.add(mapViewArea);
+        mapViewPanel.setBackground(Color.WHITE);        
         
         gbc = setGbc(new Insets(0, 2, 2, 0), GridBagConstraints.BOTH, GridBagConstraints.EAST, 1, 0, 1, 2, 0.8, 0.7);
         whiteBoxPanel.add(mapViewPanel, gbc);
@@ -823,7 +811,7 @@ public class WEBsInterface extends JFrame implements Runnable {
         frame.setVisible(true);
         projPanel.setVisible(false);
         scenPanel.setVisible(false);
-        whiteBoxPanel.setVisible(true);
+        whiteBoxPanel.setVisible(false);
         mapStatsPanel.setVisible(false);
     }
     
