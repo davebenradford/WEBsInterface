@@ -147,7 +147,7 @@ public class LoadMapRenderer extends JFrame implements WhiteboxPluginHost {
 
             for (MapArea mapArea : mi.getMapAreas()) {
                 LegendEntryPanel legendMapAreaEntry;
-//                legendMapAreaEntry = new LegendEntryPanel(mapArea, 
+//                legendMapAreaEntry = new LegendEntryPanelClone(mapArea, 
 //                    this, fonts.get("inactiveMap"), i, mapArea.getElementNumber(), 
 //                        -1, (mapArea.getElementNumber() == selectedMapAndLayer[2]));
                 legendMapAreaEntry = new LegendEntryPanel(mapArea,

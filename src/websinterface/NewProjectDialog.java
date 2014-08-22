@@ -39,27 +39,31 @@ public class NewProjectDialog {
     //Swing Component Declarations
     
     private final JFrame frame;
-    private final JTextField wsFld;
+    private final JTextField nameFld;
     private final JTextField projFld;
+    private final JTextField wsFld;
     private final JTextField spatFld;
     private final JTextField swatFld;
-    private final JLabel wsLbl;
+    private final JLabel nameLbl;
     private final JLabel projLbl;
+    private final JLabel wsLbl;
     private final JLabel spatLbl;
     private final JLabel swatLbl;
     private final JButton confirm;
     private final JButton cancel;
     private final JButton projLocate;
+    private final JButton wsLocate;
     private final JButton spatLocate;
     private final JButton swatLocate;
     
     private final Font f = new Font("Sans_Serif", Font.BOLD, 12);
     private final File dataFile;
     private String source;
-    
+    private String applicationDirectory;
+     
     protected NewProjectDialog() throws IOException {
         // Initialize the Dialog Box
-        frame = new JFrame("Create a New STC Project");
+        frame = new JFrame("Create a New WEBs Project");
         frame.setLayout(new GridBagLayout());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(768, 200);
@@ -67,64 +71,80 @@ public class NewProjectDialog {
         frame.setIconImage(WEBsInterface.websIcon.getImage());
         frame.setLocation(frame.getWidth() / 4, frame.getHeight());
         
-        dataFile = new File(new File("").getAbsolutePath());
+        applicationDirectory = java.net.URLDecoder.decode(getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+        applicationDirectory += getClass().getName().replace('.', File.separatorChar);
+        applicationDirectory = new File(applicationDirectory).getParent() + File.separator;
+        dataFile = new File(applicationDirectory);
         source = dataFile.toString();
         
-        // Watershed Components
-        wsLbl = createLabel(new JLabel("Watershed:", SwingConstants.RIGHT));
-        GridBagConstraints gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 0.3, 1.0);
-        frame.add(wsLbl, gbc);
+        // WEBs Project Components
+        nameLbl = createLabel(new JLabel("Project Name: ", SwingConstants.RIGHT));
+        GridBagConstraints gbc = setGbc(new Insets(8, 8, 8, 4), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 0, 1, 1, 0.4, 1.0);
+        frame.add(nameLbl, gbc);
         
-        wsFld = createField(new JTextField("STC", 40), "Watershed Project Name");
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 0, 2, 1, 0.7, 1.0);
-        frame.add(wsFld, gbc);
+        nameFld = createField(new JTextField("New Project", 40), "Project Name");
+        gbc = setGbc(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 0, 1, 1, 0.6, 1.0);
+        frame.add(nameFld, gbc);
         
-        // Project File Location Components
+        // Watershed Location Components
         projLbl = createLabel(new JLabel("Project Folder:", SwingConstants.RIGHT));
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 0.3, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 1, 1, 1, 0.3, 1.0);
         frame.add(projLbl, gbc);
         
-        projFld = createField(new JTextField(source, 40), "Project File Location");
-        gbc = setGBC(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1, 0.7, 1.0);
+        projFld = createField(new JTextField("C:\\", 40), "Project File Location");
+        gbc = setGbc(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1, 0.7, 1.0);
         frame.add(projFld, gbc);
         
         projLocate = createButton(new JButton("..."), "Change Project Location", new directoryListener());
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 1, 1, 1, 0.05, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 1, 1, 1, 0.05, 1.0);
         frame.add(projLocate, gbc);
+        
+        // Watershed Location Components
+        wsLbl = createLabel(new JLabel("Watershed Folder:", SwingConstants.RIGHT));
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 2, 1, 1, 0.3, 1.0);
+        frame.add(wsLbl, gbc);
+        
+        wsFld = createField(new JTextField(source, 40), "Watershed Project Name");
+        gbc = setGbc(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 2, 1, 1, 1.0, 1.0);
+        frame.add(wsFld, gbc);
+        
+        wsLocate = createButton(new JButton("..."), "Change Project Location", new directoryListener());
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 2, 1, 1, 0.05, 1.0);
+        frame.add(wsLocate, gbc);
         
         // Spatial Data Locaton Components
         spatLbl = createLabel(new JLabel("Spatial Folder:", SwingConstants.RIGHT));
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 2, 1, 1, 0.3, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 3, 1, 1, 0.3, 1.0);
         frame.add(spatLbl, gbc);
         
         spatFld = createField(new JTextField(source, 40), "Spatial Data Location");
-        gbc = setGBC(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 2, 1, 1, 0.7, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 3, 1, 1, 0.7, 1.0);
         frame.add(spatFld, gbc);
         
         spatLocate = createButton(new JButton("..."), "Change Spatial Data Location", new directoryListener());
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 2, 1, 1, 0.05, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 3, 1, 1, 0.05, 1.0);
         frame.add(spatLocate, gbc);
         
         // Swat Input File Location
         swatLbl = createLabel(new JLabel("SWAT Input:", SwingConstants.RIGHT));
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 3, 1, 1, 0.3, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 0, 4, 1, 1, 0.3, 1.0);
         frame.add(swatLbl, gbc);
         
         swatFld = createField(new JTextField(source, 40), "SWAT Data Location");
-        gbc = setGBC(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 3, 1, 1, 0.7, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, -24), GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 4, 1, 1, 0.7, 1.0);
         frame.add(swatFld, gbc);
         
         swatLocate = createButton(new JButton("..."), "Change SWAT Data Location", new directoryListener());
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 3, 1, 1, 0.05, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.FIRST_LINE_END, 2, 4, 1, 1, 0.05, 1.0);
         frame.add(swatLocate, gbc);
         
         // Confirm and Cancel Buttons
         confirm = createButton(new JButton("OK"), "false", new confirmListener());
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 1, 4, 1, 1, 0.85, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 1, 5, 1, 1, 0.85, 1.0);
         frame.add(confirm, gbc);
         
         cancel = createButton(new JButton("Cancel"), "false", new cancelListener());
-        gbc = setGBC(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 2, 4, 1, 1, 0.05, 1.0);
+        gbc = setGbc(new Insets(8, 8, 8, 8), GridBagConstraints.NONE, GridBagConstraints.SOUTHEAST, 2, 5, 1, 1, 0.05, 1.0);
         frame.add(cancel, gbc);
         
         frame.pack();
@@ -187,7 +207,7 @@ public class NewProjectDialog {
      * @return 
      */
     
-    private GridBagConstraints setGBC(Insets i, int fill, int a, int xCoord, int yCoord, int wide, int high, double weighX, double weighY) {
+    private GridBagConstraints setGbc(Insets i, int fill, int a, int xCoord, int yCoord, int wide, int high, double weighX, double weighY) {
         GridBagConstraints g = new GridBagConstraints();
         g.insets = i;
         g.fill = fill;
@@ -221,8 +241,8 @@ public class NewProjectDialog {
         @Override
         public void actionPerformed(ActionEvent ae){
             getDirectory();
-            if(ae.getSource().equals(projLocate)) {
-                projFld.setText(source);
+            if(ae.getSource().equals(wsLocate)) {
+                wsFld.setText(source);
                 spatFld.setText(source + "\\Data\\Spatial");
                 swatFld.setText(source + "\\Data\\txtinout");
             }
@@ -231,6 +251,9 @@ public class NewProjectDialog {
             }
             else if(ae.getSource().equals(swatLocate)) {
                 swatFld.setText(source);
+            }
+            else if(ae.getSource().equals(projLocate)) {
+                projFld.setText(source);
             }
         }
     }
@@ -241,15 +264,15 @@ public class NewProjectDialog {
             WEBsInterface.projLocation.setText(projFld.getText());
             WEBsInterface.spatLocation.setText(spatFld.getText());
             WEBsInterface.swatLocation.setText(swatFld.getText());
-            WEBsInterface.basicProj.setVisible(true);
-            WEBsInterface.spatial.setVisible(true);
-            WEBsInterface.swat.setVisible(true);
-            WEBsInterface.scenButton.setVisible(true);
-            WEBsInterface.spatLocBtn.setVisible(true);
-            WEBsInterface.swatLocBtn.setVisible(true);
+            //WEBsInterface.basicProj.setVisible(true);
+            //WEBsInterface.spatial.setVisible(true);
+            //WEBsInterface.swat.setVisible(true);
+            //WEBsInterface.scenButton.setVisible(true);
+            //WEBsInterface.spatLocBtn.setVisible(true);
+            //WEBsInterface.swatLocBtn.setVisible(true);
             frame.dispose();
-            WEBsInterface.frame.revalidate();
-            WEBsInterface.projPanel.setVisible(true);
+            WEBsInterface.frame.add(WEBsInterface.projPanel);
+            //WEBsInterface.projPanel.setVisible(true);
             WEBsInterface.projPanel.repaint();
         }
     }
